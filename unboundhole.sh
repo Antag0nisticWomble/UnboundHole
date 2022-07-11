@@ -4,13 +4,13 @@
 
 sudo apt update &
 
-wait $!
+wait
 
 ## Perform full upgrade.
 
 sudo apt full-upgrade -y &
 
-wait $!
+wait
 
 ## Switch to opt folder to download whitelist scripts.
 
@@ -26,13 +26,20 @@ sudo apt install unbound sqlite3 -y
 
 ## Download and install root.hints file for unbound.
 
+wait
+
 wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints 
 
 ## Complete unbound config including tweaks
 
+wait
+
 sudo cp pi-hole.conf /etc/unbound/unbound.conf.d/pi-hole.conf
 
 ## Configure dnsmasq packet size cap.
+
+wait
+
 sudo mkdir /etc/dnsmasq.d/
 
 sudo cat <<EOF >/etc/dnsmasq.d/99-edns.conf
@@ -40,6 +47,8 @@ edns-packet-max=1232
 EOF
 
 ## Configure Cron to update Root Hints and Whitelist files.
+
+wait
 
 sudo cp crontab /etc/crontab
 
@@ -51,7 +60,11 @@ EOF
 
 ## Restart unbound after config changes.
 
-sudo systemctl restart unbound -y
+wait
+
+sudo systemctl restart unbound
+
+wait
 
 ## Install Pihole
 
@@ -65,9 +78,13 @@ sudo cp 01-pihole.conf /etc/dnsmasq.d/01-pihole.conf
 
 ## Config to ensure settings remain through updates
 
+wait
+
 sudo cp setupVars.conf /etc/pihole/setupVars.conf
 
 ## Tweaks for Pihole-FTL
+
+wait
 
 sudo cp pihole-FTL.conf /etc/pihole/pihole-FTL.conf
 
@@ -136,11 +153,13 @@ sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comme
 ## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
 ## ^^^ Placeholder reference to add more lists ^^^
 
+wait
+
 ## Update gravity db
 
 sudo pihole -g &
 
-wait $!
+wait
 
 ## Move to Whitelist Directory
 
@@ -150,7 +169,7 @@ cd /opt/whitelist/scripts
 
 sudo python whitelist.py &
 
-wait $!
+wait
 
 ## Restart system
 
