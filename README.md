@@ -8,6 +8,6 @@ Please be warned the community lists included with this config amount to over 7 
 I don't use social media so a lot of these are included in the lists. You have been warned!
 
 git clone https://github.com/Nitroblueuk/UnboundHole.git &&
-cd unboundhole/ &&
+cd UnboundHole/ &&
 chmod +x unboundhole.sh &&
 ./unboundhole.sh
