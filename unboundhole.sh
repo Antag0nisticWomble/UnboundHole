@@ -143,5 +143,5 @@ sudo python whitelist.py
 
 ## Reminder
 
-echo "Remember to run sudo pihole -a -p to change your password and reboot the system to finish.
+echo "Remember to run sudo pihole -a -p to change your password and reboot the system to finish."
 
