@@ -22,7 +22,7 @@ sudo git clone https://github.com/anudeepND/whitelist.git
 
 ## Install Unbound package.
 
-sudo apt install unbound -y
+sudo apt install unbound sqlite3 -y
 
 ## Download and install root.hints file for unbound.
 
@@ -30,9 +30,10 @@ wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound
 
 ## Complete unbound config including tweaks
 
-sudo cp -r ./pi-hole.conf /etc/unbound/unbound.conf.d/pi-hole.conf
+sudo cp pi-hole.conf /etc/unbound/unbound.conf.d/pi-hole.conf
 
 ## Configure dnsmasq packet size cap.
+sudo mkdir /etc/dnsmasq.d/
 
 sudo cat <<EOF >/etc/dnsmasq.d/99-edns.conf
 edns-packet-max=1232
@@ -40,7 +41,7 @@ EOF
 
 ## Configure Cron to update Root Hints and Whitelist files.
 
-sudo cp -r ./crontab /etc/crontab
+sudo cp crontab /etc/crontab
 
 ## Configure NTP for DNSSec
 
@@ -60,15 +61,15 @@ wait
 
 ## Modifier to disable cache and DNS sec. Switches DNS to Unbound instance.
 
-sudo cp -r ./01-pihole.conf /etc/dnsmasq.d/01-pihole.conf
+sudo cp 01-pihole.conf /etc/dnsmasq.d/01-pihole.conf
 
 ## Config to ensure settings remain through updates
 
-sudo cp -r ./setupVars.conf /etc/pihole/setupVars.conf
+sudo cp setupVars.conf /etc/pihole/setupVars.conf
 
 ## Tweaks for Pihole-FTL
 
-sudo cp -r ./pihole-FTL.conf /etc/pihole/pihole-FTL.conf
+sudo cp pihole-FTL.conf /etc/pihole/pihole-FTL.conf
 
 ## Add more lists to pihole
 
