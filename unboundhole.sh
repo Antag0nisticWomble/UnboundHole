@@ -8,14 +8,6 @@ sudo apt update
 
 sudo apt full-upgrade -y
 
-## Switch to opt folder to download whitelist scripts.
-
-cd /opt/
-
-## Download whitelist scrips for pihole.
-
-sudo git clone https://github.com/anudeepND/whitelist.git 
-
 ## Install Unbound package.
 
 sudo apt install unbound sqlite3 -y
@@ -44,7 +36,7 @@ sudo systemctl restart unbound
 
 ## Install Pihole
 
-sudo curl -sSL https://install.pi-hole.net | bash
+sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true DNSMASQ_USER=root bash
 
 ## Modifier to disable cache and DNS sec. Switches DNS to Unbound instance.
 
@@ -132,6 +124,14 @@ sudo pihole -g
 sudo cat <<EOF >/etc/dnsmasq.d/99-edns.conf
 edns-packet-max=1232
 EOF
+
+## Switch to opt folder to download whitelist scripts.
+
+cd /opt/
+
+## Download whitelist scrips for pihole.
+
+sudo git clone https://github.com/anudeepND/whitelist.git 
 
 ## Move to Whitelist Directory
 
