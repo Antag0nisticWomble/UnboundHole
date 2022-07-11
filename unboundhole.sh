@@ -141,6 +141,7 @@ cd /opt/whitelist/scripts
 
 sudo python whitelist.py
 
-## Restart system
+## Reminder
 
-sudo reboot
+echo "Remember to run sudo pihole -a -p to change your password and reboot the system to finish.
+
