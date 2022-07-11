@@ -7,7 +7,7 @@ Just be sure that you leave DNSSEC and cache disabled on pihole this will be han
 Please be warned the community lists included with this config amount to over 7 million addresses, you may have to manually whitelist some sources. 
 I don't use social media so a lot of these are included in the lists. You have been warned!
 
-git clone https://github.com/Nitroblueuk/UnboundHole.git
-cd unboundhole/
-chmod +x unboundhole.sh
+git clone https://github.com/Nitroblueuk/UnboundHole.git &&
+cd unboundhole/ &&
+chmod +x unboundhole.sh &&
 ./unboundhole.sh
