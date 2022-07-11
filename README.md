@@ -9,5 +9,5 @@ I don't use social media so a lot of these are included in the lists. You have b
 
 git clone https://github.com/Nitroblueuk/UnboundHole.git &&
 cd UnboundHole/ &&
-chmod +x unboundhole.sh &&
-./unboundhole.sh
+sudo chmod +x unboundhole.sh &&
+sudo ./unboundhole.sh

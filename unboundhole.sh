@@ -34,9 +34,9 @@ EOF
 
 sudo systemctl restart unbound
 
-## Install Pihole
+## Install Pihole (OS Check flag for ubuntu 22.04)
 
-sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true DNSMASQ_USER=root bash
+sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
 
 ## Modifier to disable cache and DNS sec. Switches DNS to Unbound instance.
 
@@ -139,7 +139,7 @@ cd /opt/whitelist/scripts
 
 ## Run Whitelist script for first time. (Cron will run this on schedule)
 
-sudo python whitelist.py
+sudo ./whitelist.py
 
 ## Reminder
 
