@@ -264,6 +264,11 @@ cd /opt/whitelist/scripts
 
 sudo ./whitelist.py
 
+## Run unbound dns test.
+
+dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335
+dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335
+
 ## Password Reminder.
 
 echo "Remember to run "sudo pihole -a -p" to change your password and reboot the system to finish."
