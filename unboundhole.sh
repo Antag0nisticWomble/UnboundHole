@@ -1,4 +1,4 @@
-#! /bin/bash -l
+#! /bin/bash
 
 ## Log output from script progress.
 export LOGDIR=logs
