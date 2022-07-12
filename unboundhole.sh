@@ -16,7 +16,7 @@ sudo apt install unbound sqlite3 -y
 
 wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints 
 
-## Complete unbound config including tweaks
+## Complete unbound config including tweaks.
 
 sudo cp pi-hole.conf /etc/unbound/unbound.conf.d/pi-hole.conf
 
@@ -30,11 +30,16 @@ sudo cat <<EOF >/etc/systemd/timesyncd.conf
 FallbackNTP=194.58.204.20 pool.ntp.org
 EOF
 
+## Disable unbound-resolvconf to prevent local dns issues.
+
+sudo systemctl disable unbound-resolvconf.service
+sudo systemctl stop unbound-resolvconf.service
+
 ## Restart unbound after config changes.
 
 sudo systemctl restart unbound
 
-## Install Pihole (OS Check flag for ubuntu 22.04)
+## Install Pihole (OS Check flag for ubuntu 22.04).
 
 sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
 
@@ -42,15 +47,15 @@ sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
 
 sudo cp 01-pihole.conf /etc/dnsmasq.d/01-pihole.conf
 
-## Config to ensure settings remain through updates
+## Config to ensure settings remain through updates.
 
 sudo cp setupVars.conf /etc/pihole/setupVars.conf
 
-## Tweaks for Pihole-FTL
+## Tweaks for Pihole-FTL.
 
 sudo cp pihole-FTL.conf /etc/pihole/pihole-FTL.conf
 
-## Add more lists to pihole
+## Add more lists to pihole.
 
 sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt ', 1, 'SimpleTrackers');"
 sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt', 1, 'SimpleAds');"
@@ -114,7 +119,7 @@ sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comme
 ## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
 ## ^^^ Placeholder reference to add more lists ^^^
 
-## Update gravity db
+## Update gravity db.
 
 sudo pihole -g
 
@@ -132,14 +137,14 @@ cd /opt/
 
 sudo git clone https://github.com/anudeepND/whitelist.git 
 
-## Move to Whitelist Directory
+## Move to Whitelist Directory.
 
 cd /opt/whitelist/scripts
 
-## Run Whitelist script for first time. (Cron will run this on schedule)
+## Run Whitelist script for first time. (Cron will run this on schedule).
 
 sudo ./whitelist.py
 
-## Reminder
+## Password Reminder.
 
 echo "Remember to run sudo pihole -a -p to change your password and reboot the system to finish."
