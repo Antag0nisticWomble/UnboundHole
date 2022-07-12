@@ -30,9 +30,13 @@ sudo cat <<EOF >/etc/systemd/timesyncd.conf
 FallbackNTP=194.58.204.20 pool.ntp.org
 EOF
 
-## Disable unbound-resolvconf to prevent local dns issues.
+## Uncomment 2 lines below to disable unbound-resolvconf.
+##sudo systemctl disable unbound-resolvconf.service
+##sudo systemctl stop unbound-resolvconf.service
 
-sudo systemctl start unbound-resolvconf.service
+## Start unbound-resolvconf for pihole dns (Use # To comment out the below line if disabling the service with the above).
+
+sudo systemctl enable --now unbound-resolvconf.service
 
 ## Restart unbound after config changes.
 
