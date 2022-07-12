@@ -10,11 +10,21 @@ sudo apt full-upgrade -y
 
 ## Install Unbound package.
 
-sudo apt install unbound sqlite3 -y
+sudo apt install unbound sqlite3 resolveconf -y
 
 ## Download and install root.hints file for unbound.
 
 wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints 
+
+# Configure resolvconf head file for cloudflare dns.
+sudo cat <<EOF >/etc/resolvconf/resolv.conf.d/head
+nameserver 1.1.1.1
+nameserver 1.0.0.1
+EOF
+
+## Restart resolvconf service to update sources for pihole lists (This is only to fix the DNS resolution unavailable error).
+sudo resolvconf --enable-updates
+sudo resolvconf -u
 
 ## Complete unbound config including tweaks.
 
@@ -30,13 +40,9 @@ sudo cat <<EOF >/etc/systemd/timesyncd.conf
 FallbackNTP=194.58.204.20 pool.ntp.org
 EOF
 
-## Uncomment 2 lines below to disable unbound-resolvconf.
-##sudo systemctl disable unbound-resolvconf.service
-##sudo systemctl stop unbound-resolvconf.service
-
-## Start unbound-resolvconf for pihole dns (Use # To comment out the below line if disabling the service with the above).
-
-sudo systemctl enable --now unbound-resolvconf.service
+## Disable unbound-resolvconf.
+sudo systemctl disable unbound-resolvconf.service
+sudo systemctl stop unbound-resolvconf.service
 
 ## Restart unbound after config changes.
 
