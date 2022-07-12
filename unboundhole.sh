@@ -1,5 +1,15 @@
 #! /bin/sh
 
+## Log output from script progress.
+
+log_file=$curr_dir/log_file.txt
+exec > >(tee -a ${log_file} )
+exec 2> >(tee -a ${log_file} >&2)
+
+##log_file_path="output.log"
+##log() { while IFS='' read -r line; do echo "$line" >> "$log_file_path"; done; };
+##exec > >(tee >(log)) 2>&1
+
 ## Check for system updates.
 
 sudo apt update
@@ -10,7 +20,7 @@ sudo apt full-upgrade -y
 
 ## Install Unbound package.
 
-sudo apt install unbound sqlite3 resolveconf -y
+sudo apt install unbound sqlite3 resolvconf -y
 
 ## Download and install root.hints file for unbound.
 
