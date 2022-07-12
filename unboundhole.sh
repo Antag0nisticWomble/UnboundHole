@@ -32,8 +32,7 @@ EOF
 
 ## Disable unbound-resolvconf to prevent local dns issues.
 
-sudo systemctl disable unbound-resolvconf.service
-sudo systemctl stop unbound-resolvconf.service
+sudo systemctl start unbound-resolvconf.service
 
 ## Restart unbound after config changes.
 
