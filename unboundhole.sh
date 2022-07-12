@@ -1,9 +1,9 @@
 #! /bin/sh
 
 ## Log output from script progress.
-# export LOGDIR=./logs
+export LOGDIR=logs
 # export DATE=`date +"%Y%m%d"`
-# export DATETIME=`date +"%Y%m%d_%H%M%S"`
+export DATETIME=`date +"%Y%m%d_%H%M%S"`
 # NO_JOB_LOGGING="false"
 
 ScriptName=`basename $0`
@@ -126,16 +126,6 @@ sudo apt install unbound sqlite3 resolvconf -y
 
 wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints 
 
-# Configure resolvconf head file for cloudflare dns.
-sudo cat <<EOF >/etc/resolvconf/resolv.conf.d/head
-nameserver 1.1.1.1
-nameserver 1.0.0.1
-EOF
-
-## Restart resolvconf service to update sources for pihole lists (This is only to fix the DNS resolution unavailable error).
-sudo resolvconf --enable-updates
-sudo resolvconf -u
-
 ## Complete unbound config including tweaks.
 
 sudo cp pi-hole.conf /etc/unbound/unbound.conf.d/pi-hole.conf
@@ -157,6 +147,16 @@ sudo systemctl stop unbound-resolvconf.service
 ## Restart unbound after config changes.
 
 sudo systemctl restart unbound
+
+# Configure resolvconf head file for cloudflare dns.
+sudo cat <<EOF >/etc/resolvconf/resolv.conf.d/head
+nameserver 1.1.1.1
+nameserver 1.0.0.1
+EOF
+
+## Restart resolvconf service to update sources for pihole lists (This is only to fix the DNS resolution unavailable error).
+sudo resolvconf --enable-updates
+sudo resolvconf -u
 
 ## Install Pihole (OS Check flag for ubuntu 22.04).
 
