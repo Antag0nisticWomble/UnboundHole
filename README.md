@@ -10,4 +10,4 @@ I don't use social media so a lot of these are included in the lists. You have b
 On the pihole installation menu set DNS servers to custom and input 127.0.0.1#5335 this is to make sure pihole queries unbound for addresses.
 
 ## One liner to get you started ##
-sudo git clone https://github.com/Nitroblueuk/UnboundHole.git && cd UnboundHole/ && sudo chmod +x unboundhole.sh && sudo ./unboundhole.sh
+sudo git clone https://github.com/Nitroblueuk/UnboundHole.git && cd UnboundHole/ && sudo chmod +x unboundhole.sh && sudo ./unboundhole.sh -V

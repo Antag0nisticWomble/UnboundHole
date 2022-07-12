@@ -112,6 +112,8 @@ edebug "debugging"
 ecrit "CRITICAL MESSAGE!"
 edumpvar HOSTNAME
 
+Log_Open
+
 ## Check for system updates.
 
 sudo apt update
@@ -269,3 +271,5 @@ sudo ./whitelist.py
 ## Password Reminder.
 
 echo "Remember to run sudo pihole -a -p to change your password and reboot the system to finish."
+
+Log_Close
