@@ -120,7 +120,7 @@ sudo apt update
 
 ## Install Unbound package.
 
-sudo apt install unbound sqlite3 resolvconf -y
+sudo apt install curl git unbound sqlite3 resolvconf -y
 
 ## Download and install root.hints file for unbound.
 
