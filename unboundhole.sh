@@ -114,13 +114,9 @@ edumpvar HOSTNAME
 
 Log_Open
 
-## Check for system updates.
+## Refresh package list.
 
 sudo apt update
-
-## Perform full upgrade.
-
-sudo apt full-upgrade -y
 
 ## Install Unbound package.
 
