@@ -76,7 +76,7 @@ function Log_Close() {
                         sleep 1
                         kill  $teepid
                 fi
-                rm $Pipe
+                sudo rm $Pipe
                 unset PIPE_OPENED
         fi
 }
