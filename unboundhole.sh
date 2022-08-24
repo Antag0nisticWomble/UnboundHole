@@ -83,13 +83,13 @@ function pihole(){
 
 function pihole_conf(){
     echo -e "$INFO Disabling pihole cache. $END"
-    sudo sed -i '32s/.*/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
+    sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
     echo -e "$GOOD Configuration completed. Continuing setup. $END"
 }
 
 function config_persist(){
     echo -e "$WARN Making pihole config persistent. $END"
-    sudo sed -i '8s/.*/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
+    sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
     echo -e "$GOOD Config changes saved. Continuing setup. $END"
 }
 
