@@ -21,24 +21,86 @@ log_location="${PWD%/} logs"
 
 # Functions
 
+function sys_reboot(){
+    read sys_reboot_yn
+        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
+            case $sys_reboot_yn in
+                y)
+                    echo -e "$WARN system rebooting in 10 seconds! $END"
+                    wait 10
+                    sudo reboot
+                    ;;
+                Y)
+                    echo -e "$WARN system rebooting in 10 seconds! $END"
+                    wait 10
+                    sudo reboot
+                    ;;
+                N)
+                    echo -e "$INFO Please restart the script once system has rebooted. $END"
+                    exit
+                    ;;
+                n)
+                    echo -e "$INFO Please restart the script once system has rebooted. $END"
+                    exit
+                    ;;
+                    esac
+}
+
+
 function system_upgrade(){
-            read sys_updgrade_yn
+    read sys_upgrade_yn
+        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
             case $sys_upgrade_yn in
-                echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-                    y)
-                        echo -e "$WARN Proceeding to upgrade and reboot system. $END"
-                        echo -e "$INFO Fetching latest updates. $END"
-                        sudo apt update
-                        echo -e "$INFO Downloading & installing any new packages. $END"
-                        sudo apt full-upgrade -y
-                        echo -e "$INFO Performing snap refresh. $END"
-                        sudo snap refresh
-                        echo -e "$GOOD System upgrades complete! Rebooting. $END"
-                        sudo reboot
+                y)
+                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$INFO Fetching latest updates. $END"
+                    sudo apt update
+                    echo -e "$INFO Downloading & installing any new packages. $END"
+                    sudo apt full-upgrade -y
+                    echo -e "$INFO Performing snap refresh. $END"
+                    sudo snap refresh
+                    echo -e "$GOOD System upgrades complete! $END"
+                    sys_reboot
+                    ;;
+                Y)    
+                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$INFO Fetching latest updates. $END"
+                    sudo apt update
+                    echo -e "$INFO Downloading & installing any new packages. $END"
+                    sudo apt full-upgrade -y
+                    echo -e "$INFO Performing snap refresh. $END"
+                    sudo snap refresh
+                    echo -e "$GOOD System upgrades complete! $END"
+                    sys_reboot
+                    ;;
+                n)
+                    echo -e "$ERROR Please update and reboot system then try again. $END"
+                    exit
+                    ;;
+                N)
+                    echo -e "$ERROR Please update and reboot system then try again. $END"
+                    exit
+                    ;;
+                    esac
+}
+
+function check_updated(){
+    echo -n "Is the system fully updated? [Y / N]"
+        read sys_updated_yn
+            case $sys_updated_yn in
+                y)
+                        echo -e "$GOOD Continuing to installation Phase. $END"
                         ;;
-                    n)
+                Y)
+                        echo -e "$GOOD Continuing to installation Phase. $END"
+                        ;;
+                N)
                         echo -e "$ERROR Please update and reboot system then try again. $END"
-                        exit
+                        system_upgrade
+                        ;;
+                n)
+                        echo -e "$ERROR Please update and reboot system then try again. $END"
+                        system_upgrade
                         ;;
                         esac
 }
@@ -182,20 +244,6 @@ function sig_check(){
 function create_log(){
     cat ${HOME}/.bash_history > ${HOME}/history_"$dateTime".txt
     echo -e "$INFO Command history has been saved in ${HOME}/history_"$dateTime".txt. $END"
-}
-
-function check_updated(){
-    echo -n "Is the system fully updated? [Y / N]"
-        read sys_updated_yn
-            case $sys_updated_yn in
-                y)
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        ;;
-                n)
-                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                        system_upgrade
-                        ;;
-                        esac
 }
 
 ## Check Updated
