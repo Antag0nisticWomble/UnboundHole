@@ -29,14 +29,14 @@ function sig_check(){
     echo -e "$INFO Checking DNSSEC is working $END"
     dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335
     dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335
-    echo -e "$GOOD DNSSec test complete. Continuing install. $END"
+    echo -e "$GOOD DNSSec test complete. $END"
 }
 
 function whitelist(){
     cd /opt/
     
     ## Download whitelist scrips for pihole.
-    echo -e "$WARN Downloading the whitelist script. $END"
+    echo -e "$WARN Install whitelist script. $END"
     sudo git clone https://github.com/anudeepND/whitelist.git 
     
     # Remove clear console line.
@@ -55,14 +55,14 @@ function whitelist(){
 }
 
 function gravity_up(){
-    echo -e "$INFO Pulling in new lists for gravity. $END"
+    echo -e "$INFO Pulling in new lists into gravity. $END"
     sudo pihole -g
-    echo -e "$GOOD Lists updated successfully. Continuing install. $END"
+    echo -e "$GOOD Lists updated successfully. $END"
     whitelist
 }
 
 function adlists(){
-    echo -e "$INFO Adding new lists to pihole. $END"
+    echo -e "$INFO Adding new lists to database. $END"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt ', 1, 'SimpleTrackers');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt', 1, 'SimpleAds');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts_without_controversies.txt', 1, 'KADHosts');"
@@ -122,9 +122,9 @@ function adlists(){
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://v.firebog.net/hosts/Prigent-Adult.txt', 1, 'Prigent Adult');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/mhhakim/pihole-blocklist/master/list.txt', 1, 'mhhakim');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/mhhakim/pihole-blocklist/master/porn.txt', 1, 'mhhakim Porn');"
-## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
-## ^^^ Placeholder reference to add more lists ^^^
-    echo -e "$GOOD New adlists added. Continuing install. $END"
+    ## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
+    ## ^^^ Placeholder reference to add more lists ^^^
+    echo -e "$GOOD New adlists added to database. $END"
 
     # Pull new lists into pihole.
     gravity_up
@@ -134,21 +134,21 @@ function ftl_tweaks(){
     echo -e "$INFO Adding tweaks to pihole-FTL. $END"
     sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-    echo -e "$GOOD Pihole FTL config complete. Continuing install. $END"
+    echo -e "$GOOD Pihole FTL config complete. $END"
     adlists
 }
 
 function config_persist(){
     echo -e "$WARN Making pihole config persistent. $END"
     sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-    echo -e "$GOOD Config changes saved. Continuing setup. $END"
+    echo -e "$GOOD Config changes saved. $END"
     ftl_tweaks
 }
 
 function pihole_conf(){
     echo -e "$INFO Disabling pihole cache. $END"
     sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-    echo -e "$GOOD Configuration completed. Continuing setup. $END"
+    echo -e "$GOOD Pihole cache disabled. $END"
     config_persist
 }
 
@@ -156,14 +156,14 @@ function pihole(){
     sudo systemctl restart unbound
     echo -e "$INFO Beginning pihole installation. $END"
     sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
-    echo -e "$INFO Pihole successfully installed. Continuing. $END"
+    echo -e "$INFO Pihole successfully installed. $END"
     pihole_conf
 }
 
 function timesync_conf(){
     echo -e "$INFO Updating NTP Server configuration $END"
     sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
-    echo -e "$GOOD Update successful continuing. $END"
+    echo -e "$GOOD NTP servers updated. $END"
     pihole
 }
 
@@ -172,28 +172,28 @@ function update_crontab(){
     sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
     sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
     sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
-    echo -e "$GOOD Crontab Updated continuing. $END"
+    echo -e "$GOOD Crontab Updated. $END"
     timesync_conf
 }
 
 function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END$"
     sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
-    echo -e "$GOOD Unbound configuration installed continuing. $END"
+    echo -e "$GOOD Unbound configuration installed. $END"
     update_crontab
 }
 
 function root_hints(){
     echo -e "$INFO Downloading and installing root hints file. $END"
     wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-    echo -e "$GOOD Root hints file successfully installed continuing. $END"
+    echo -e "$GOOD Root hints file successfully installed. $END"
     unboundconf
 }
 
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     sudo apt install curl git unbound sqlite3 -y
-    echo -e "$GOOD Packages installed. Continuing with configuration. $END"
+    echo -e "$GOOD Packages installed. $END"
     root_hints
 }
 
@@ -225,11 +225,11 @@ function system_upgrade(){
     read sys_upgrade_yn
             case $sys_upgrade_yn in
                 y)
-                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$WARN Proceeding to upgrade.$END"
                     echo -e "$INFO Fetching latest updates. $END"
                     sudo apt update
                     echo -e "$INFO Downloading & installing any new packages. $END"
-                    sudo apt full-upgrade -y
+                    sudo apt full-upgrade -y -q
                     echo -e "$INFO Performing snap refresh. $END"
                     sudo snap refresh
                     echo -e "$GOOD System upgrades complete! $END"
@@ -237,7 +237,7 @@ function system_upgrade(){
                     sys_reboot
                     ;;
                 Y)    
-                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$WARN Proceeding to upgrade. $END"
                     echo -e "$INFO Fetching latest updates. $END"
                     sudo apt update
                     echo -e "$INFO Downloading & installing any new packages. $END"
@@ -288,4 +288,4 @@ check_updated
 
 ## Password Reminder.
 
-echo -e "$INFO Remember to run sudo pihole -a -p to change your password. $END"
+echo -e "$INFO Installation complete. Remember to run sudo pihole -a -p to change your password. $END"
