@@ -153,6 +153,7 @@ function pihole_conf(){
 }
 
 function pihole(){
+    sudo systemctl restart unbound
     echo -e "$INFO Beginning pihole installation. $END"
     sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
     echo -e "$INFO Pihole successfully installed. Continuing. $END"
@@ -173,7 +174,6 @@ function update_crontab(){
     sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
     echo -e "$GOOD Crontab Updated continuing. $END"
     timesync_conf
-    sudo systemctl restart unbound
 }
 
 function unboundconf(){
@@ -260,7 +260,7 @@ function system_upgrade(){
 }
 
 function check_updated(){
-    echo -n "$INFO Is the system fully updated? [Y / N] $END"
+    echo -e "$INFO Is the system fully updated? [Y / N] $END"
         read sys_updated_yn
             case $sys_updated_yn in
                 y)
