@@ -1,7 +1,7 @@
 #!/bin/bash
 #Filename: Unboundhole.sh
-#Version: 1.0
-#Creation: 24 Aug 2022
+#Version: 1.1
+#Creation: 25 Aug 2022
 #Author: Antag0nisticWomble
 
 # Log Formatting
@@ -21,145 +21,40 @@ log_location="${PWD%/} logs"
 
 # Functions
 
-function sys_reboot(){
-    read sys_reboot_yn
-        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-            case $sys_reboot_yn in
-                y)
-                    echo -e "$WARN system rebooting in 10 seconds! $END"
-                    wait 10
-                    sudo reboot
-                    ;;
-                Y)
-                    echo -e "$WARN system rebooting in 10 seconds! $END"
-                    wait 10
-                    sudo reboot
-                    ;;
-                N)
-                    echo -e "$INFO Please restart the script once system has rebooted. $END"
-                    exit
-                    ;;
-                n)
-                    echo -e "$INFO Please restart the script once system has rebooted. $END"
-                    exit
-                    ;;
-                    esac
+function sig_check(){
+    echo -e "$INFO Checking DNSSEC is working $END"
+    dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335
+    dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335
+    echo -e "$GOOD DNSSec test complete. Continuing install. $END"
 }
 
+function whitelist(){
+    cd /opt/
+    
+    ## Download whitelist scrips for pihole.
+    echo e- "$WARN Downloading the whitelist script. $END"
+    sudo git clone https://github.com/anudeepND/whitelist.git 
+    
+    # Remove clear console line.
+    sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
 
-function system_upgrade(){
-    read sys_upgrade_yn
-        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-            case $sys_upgrade_yn in
-                y)
-                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
-                    echo -e "$INFO Fetching latest updates. $END"
-                    sudo apt update
-                    echo -e "$INFO Downloading & installing any new packages. $END"
-                    sudo apt full-upgrade -y
-                    echo -e "$INFO Performing snap refresh. $END"
-                    sudo snap refresh
-                    echo -e "$GOOD System upgrades complete! $END"
-                    sys_reboot
-                    ;;
-                Y)    
-                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
-                    echo -e "$INFO Fetching latest updates. $END"
-                    sudo apt update
-                    echo -e "$INFO Downloading & installing any new packages. $END"
-                    sudo apt full-upgrade -y
-                    echo -e "$INFO Performing snap refresh. $END"
-                    sudo snap refresh
-                    echo -e "$GOOD System upgrades complete! $END"
-                    sys_reboot
-                    ;;
-                n)
-                    echo -e "$ERROR Please update and reboot system then try again. $END"
-                    exit
-                    ;;
-                N)
-                    echo -e "$ERROR Please update and reboot system then try again. $END"
-                    exit
-                    ;;
-                    esac
+    ## Move to Whitelist Directory.
+
+    cd /opt/whitelist/scripts
+
+    ## Run Whitelist script for first time. (Cron will run this on schedule).
+
+    echo -e "$WARN Starting whitelist script. $END"
+    sudo ./whitelist.py
+    echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"
+    sig_check
 }
 
-function check_updated(){
-    echo -n "Is the system fully updated? [Y / N]"
-        read sys_updated_yn
-            case $sys_updated_yn in
-                y)
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        ;;
-                Y)
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        ;;
-                N)
-                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                        system_upgrade
-                        ;;
-                n)
-                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                        system_upgrade
-                        ;;
-                        esac
-}
-
-function unbound_prereq(){
-    echo -e "$INFO Installing required packages. $END"
-    sudo apt install curl git unbound sqlite3 -y
-    echo -e "$GOOD Packages installed. Continuing with configuration. $END"
-}
-
-function root_hints(){
-    echo -e "$INFO Downloading and installing root hints file. $END"
-    wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-    echo -e "$GOOD Root hints file successfully installed continuing. $END"
-}
-
-function unboundconf(){
-    echo -e "$INFO Installing unbound configuration. $END$"
-    sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
-    echo -e "$GOOD Unbound configuration installed continuing. $END"
-}
-
-function update_crontab(){
-    echo -e "$WARN Updating Crontab. $END"
-    sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
-    sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
-    sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
-    echo -e "$GOOD Crontab Updated continuing. $END"
-}
-
-function timesync_conf(){
-    echo -e "$INFO Updating NTP Server configuration $END"
-    sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
-    echo -e "$GOOD Update successful continuing. $END"
-}
-
-function pihole(){
-    echo -e "$INFO Beginning pihole installation. $END"
-    sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
-    echo -e "$INFO Pihole successfully installed. Continuing. $END"
-}
-
-function pihole_conf(){
-    echo -e "$INFO Disabling pihole cache. $END"
-    sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-    echo -e "$GOOD Configuration completed. Continuing setup. $END"
-}
-
-function config_persist(){
-    echo -e "$WARN Making pihole config persistent. $END"
-    sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-    echo -e "$GOOD Config changes saved. Continuing setup. $END"
-}
-
-function ftl_tweaks(){
-    echo -e "$INFO Adding tweaks to pihole-FTL. $END"
-    sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
-    sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-    echo -e "$GOOD Pihole FTL config complete. Continuing install. $END"
+function gravity_up(){
+    echo -e "$INFO Pulling in new lists for gravity. $END"
+    sudo pihole -g
+    echo -e "$GOOD Lists updated successfully. Continuing install. $END"
+    whitelist
 }
 
 function adlists(){
@@ -226,101 +121,174 @@ function adlists(){
 ## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
 ## ^^^ Placeholder reference to add more lists ^^^
     echo -e "$GOOD New adlists added. Continuing install. $END"
+
+    # Pull new lists into pihole.
+    gravity_up
 }
 
-function gravity_up(){
-    echo -e "$INFO Pulling in new lists for gravity. $END"
-    sudo pihole -g
-    echo -e "$GOOD Lists updated successfully. Continuing install. $END"
+function ftl_tweaks(){
+    echo -e "$INFO Adding tweaks to pihole-FTL. $END"
+    sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
+    sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
+    echo -e "$GOOD Pihole FTL config complete. Continuing install. $END"
+    adlists
 }
 
-function sig_check(){
-    echo -e "$INFO Checking DNSSEC is working $END"
-    dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335
-    dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335
-    echo -e "$GOOD DNSSec test complete. Continuing install. $END"
+function config_persist(){
+    echo -e "$WARN Making pihole config persistent. $END"
+    sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
+    echo -e "$GOOD Config changes saved. Continuing setup. $END"
+    ftl_tweaks
 }
 
-function create_log(){
-    cat ${HOME}/.bash_history > ${HOME}/history_"$dateTime".txt
-    echo -e "$INFO Command history has been saved in ${HOME}/history_"$dateTime".txt. $END"
+function pihole_conf(){
+    echo -e "$INFO Disabling pihole cache. $END"
+    sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
+    echo -e "$GOOD Configuration completed. Continuing setup. $END"
+    config_persist
+}
+
+function pihole(){
+    echo -e "$INFO Beginning pihole installation. $END"
+    sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
+    echo -e "$INFO Pihole successfully installed. Continuing. $END"
+    pihole_conf
+}
+
+function timesync_conf(){
+    echo -e "$INFO Updating NTP Server configuration $END"
+    sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
+    echo -e "$GOOD Update successful continuing. $END"
+    pihole
+}
+
+function update_crontab(){
+    echo -e "$WARN Updating Crontab. $END"
+    sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
+    sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
+    sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
+    echo -e "$GOOD Crontab Updated continuing. $END"
+    timesync_conf
+    sudo systemctl restart unbound
+}
+
+function unboundconf(){
+    echo -e "$INFO Installing unbound configuration. $END$"
+    sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
+    echo -e "$GOOD Unbound configuration installed continuing. $END"
+    update_crontab
+}
+
+function root_hints(){
+    echo -e "$INFO Downloading and installing root hints file. $END"
+    wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
+    echo -e "$GOOD Root hints file successfully installed continuing. $END"
+    unboundconf
+}
+
+function unbound_prereq(){
+    echo -e "$INFO Installing required packages. $END"
+    sudo apt install curl git unbound sqlite3 -y
+    echo -e "$GOOD Packages installed. Continuing with configuration. $END"
+    root_hints
+}
+
+function sys_reboot(){
+    read sys_reboot_yn
+        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
+            case $sys_reboot_yn in
+                y)
+                    echo -e "$WARN system rebooting in 10 seconds! $END"
+                    wait 10
+                    sudo reboot
+                    ;;
+                Y)
+                    echo -e "$WARN system rebooting in 10 seconds! $END"
+                    wait 10
+                    sudo reboot
+                    ;;
+                N)
+                    echo -e "$INFO Please restart the script once system has rebooted. $END"
+                    exit 0
+                    ;;
+                n)
+                    echo -e "$INFO Please restart the script once system has rebooted. $END"
+                    exit 0
+                    ;;
+                    esac
+}
+
+function system_upgrade(){
+    read sys_upgrade_yn
+        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
+            case $sys_upgrade_yn in
+                y)
+                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$INFO Fetching latest updates. $END"
+                    sudo apt update
+                    echo -e "$INFO Downloading & installing any new packages. $END"
+                    sudo apt full-upgrade -y
+                    echo -e "$INFO Performing snap refresh. $END"
+                    sudo snap refresh
+                    echo -e "$GOOD System upgrades complete! $END"
+                    sys_reboot
+                    ;;
+                Y)    
+                    echo -e "$WARN Proceeding to upgrade and reboot system. $END"
+                    echo -e "$INFO Fetching latest updates. $END"
+                    sudo apt update
+                    echo -e "$INFO Downloading & installing any new packages. $END"
+                    sudo apt full-upgrade -y
+                    echo -e "$INFO Performing snap refresh. $END"
+                    sudo snap refresh
+                    echo -e "$GOOD System upgrades complete! $END"
+                    sys_reboot
+                    ;;
+                n)
+                    echo -e "$ERROR Please update and reboot system then try again. $END"
+                    exit 0
+                    ;;
+                N)
+                    echo -e "$ERROR Please update and reboot system then try again. $END"
+                    exit 0
+                    ;;
+                    esac
+}
+
+function check_updated(){
+    echo -n "Is the system fully updated? [Y / N]"
+        read sys_updated_yn
+            case $sys_updated_yn in
+                y)
+                        echo -e "$GOOD Continuing to installation Phase. $END"
+                        unbound_prereq
+                        ;;
+                Y)
+                        echo -e "$GOOD Continuing to installation Phase. $END"
+                        unbound_prereq
+                        ;;
+                N)
+                        echo -e "$ERROR Please update and reboot system then try again. $END"
+                        system_upgrade
+                        ;;
+                n)
+                        echo -e "$ERROR Please update and reboot system then try again. $END"
+                        system_upgrade
+                        ;;
+                        esac
 }
 
 ## Check Updated
 
 check_updated
 
-## Install unbound packages
+## Password Reminder.
 
-unbound_prereq
+echo -e "$INFO Remember to run sudo pihole -a -p to change your password. $END"
 
-## Download and install root.hints file for unbound.
+## Check Updated
 
-root_hints 
-
-## Complete unbound config including tweaks.
-
-unboundconf
-
-## Configure Cron to update Root Hints and Whitelist files.
-
-update_crontab
-
-## Configure NTP for DNSSec
-
-timesync_conf
-
-## Restart unbound after config changes.
-
-sudo systemctl restart unbound
-
-## Install Pihole (OS Check flag for ubuntu 22.04).
-
-pihole
-
-## Modifier to disable cache and DNS sec. Switches DNS to Unbound instance.
-
-pihole_conf
-
-## Config to ensure settings remain through updates.
-
-config_persist
-
-## Tweaks for Pihole-FTL.
-
-ftl_tweaks
-
-## Add more lists to pihole.
-adlists
-
-## Update gravity db.
-
-gravity_up
-
-## Switch to opt folder to download whitelist scripts.
-
-cd /opt/
-
-## Download whitelist scrips for pihole.
-echo e- "$WARN Downloading the whitelist script. $END"
-sudo git clone https://github.com/anudeepND/whitelist.git 
-
-# Remove clear console line.
-sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-
-## Move to Whitelist Directory.
-
-cd /opt/whitelist/scripts
-
-## Run Whitelist script for first time. (Cron will run this on schedule).
-
-echo -e "$WARN Starting whitelist script. $END"
-sudo ./whitelist.py
-echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"
-
-## Run unbound dns test.
-
-sig_check
+check_updated
 
 ## Password Reminder.
 
