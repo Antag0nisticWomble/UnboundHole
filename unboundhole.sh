@@ -285,11 +285,3 @@ check_updated
 ## Password Reminder.
 
 echo -e "$INFO Remember to run sudo pihole -a -p to change your password. $END"
-
-## Check Updated
-
-check_updated
-
-## Password Reminder.
-
-echo -e "$INFO Remember to run sudo pihole -a -p to change your password. $END"
