@@ -21,6 +21,10 @@ log_location="${PWD%/} logs"
 
 # Functions
 
+function user_input(){
+    read -n 1 -r -s -p "Press any key continue."
+}
+
 function sig_check(){
     echo -e "$INFO Checking DNSSEC is working $END"
     dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335
@@ -32,7 +36,7 @@ function whitelist(){
     cd /opt/
     
     ## Download whitelist scrips for pihole.
-    echo e- "$WARN Downloading the whitelist script. $END"
+    echo -e "$WARN Downloading the whitelist script. $END"
     sudo git clone https://github.com/anudeepND/whitelist.git 
     
     # Remove clear console line.
@@ -195,16 +199,15 @@ function unbound_prereq(){
 
 function sys_reboot(){
     read sys_reboot_yn
-        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
             case $sys_reboot_yn in
                 y)
                     echo -e "$WARN system rebooting in 10 seconds! $END"
-                    wait 10
+                    sleep 10
                     sudo reboot
                     ;;
                 Y)
                     echo -e "$WARN system rebooting in 10 seconds! $END"
-                    wait 10
+                    sleep 10
                     sudo reboot
                     ;;
                 N)
@@ -220,7 +223,6 @@ function sys_reboot(){
 
 function system_upgrade(){
     read sys_upgrade_yn
-        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
             case $sys_upgrade_yn in
                 y)
                     echo -e "$WARN Proceeding to upgrade and reboot system. $END"
@@ -231,6 +233,7 @@ function system_upgrade(){
                     echo -e "$INFO Performing snap refresh. $END"
                     sudo snap refresh
                     echo -e "$GOOD System upgrades complete! $END"
+                    echo -e "$INFO Would you like to reboot the system now? Y/N $END"
                     sys_reboot
                     ;;
                 Y)    
@@ -242,6 +245,7 @@ function system_upgrade(){
                     echo -e "$INFO Performing snap refresh. $END"
                     sudo snap refresh
                     echo -e "$GOOD System upgrades complete! $END"
+                    echo -e "$INFO Would you like to reboot the system now? Y/N $END"
                     sys_reboot
                     ;;
                 n)
@@ -256,26 +260,26 @@ function system_upgrade(){
 }
 
 function check_updated(){
-    echo -n "Is the system fully updated? [Y / N]"
+    echo -n "$INFO Is the system fully updated? [Y / N] $END"
         read sys_updated_yn
             case $sys_updated_yn in
                 y)
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        unbound_prereq
-                        ;;
+                    echo -e "$GOOD Continuing to installation Phase. $END"
+                    unbound_prereq
+                    ;;
                 Y)
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        unbound_prereq
-                        ;;
+                    echo -e "$GOOD Continuing to installation Phase. $END"
+                    unbound_prereq
+                    ;;
                 N)
-                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                        system_upgrade
-                        ;;
+                    echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
+                    system_upgrade
+                    ;;
                 n)
-                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                        system_upgrade
-                        ;;
-                        esac
+                    echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
+                    system_upgrade
+                    ;;
+                    esac
 }
 
 ## Check Updated
