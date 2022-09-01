@@ -4,7 +4,7 @@
 # Creation: 1 Sept 2022
 # Author: Antag0nisticWomble
 
-log_location="${PWD%/} logs"
+log_location="${PWD%/}/logs"
 
 # Functions
 
