@@ -21,7 +21,8 @@ log_location="${PWD%/} logs"
 
 # Log output
 
-exec >> $log_location/'$currentHost-$dateTime'.log 2>&1
+exec > >(tee -a "$log_location/$currentHost-$dateTime".log)
+exec 2>&1
 
 # Reference Functions
 
