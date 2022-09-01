@@ -1,5 +1,5 @@
 #!/bin/bash
-# Filename: Unboundhole.sh
+# Filename: varFunc.sh
 # Version: 1.2
 # Creation: 1 Sept 2022
 # Author: Antag0nisticWomble
