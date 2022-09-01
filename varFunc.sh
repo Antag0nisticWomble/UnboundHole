@@ -21,7 +21,7 @@ function sig_check(){
             then
                 echo -e "$GOOD Good signature test passed successfully. $END"
             else
-                cat /var/log/syslog | grep -i unbound > unbound.log
+                cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
                 $log_location $END"
                 exit
@@ -30,7 +30,7 @@ function sig_check(){
             then    
                 echo -e "$GOOD Pihole test complete. Installation complete. $END"
             else
-                cat /var/log/syslog | grep -i pihole > pihole.log
+                cat /var/log/syslog | grep -i pihole > $log_location/pihole.log
                 echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
                 $log_location. $END"
                 exit
