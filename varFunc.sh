@@ -182,7 +182,7 @@ function timesync_conf(){
     echo -e "$INFO Updating NTP Server configuration $END"
     echo -e " "
     sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
-    echo -e "$GOOD NTP servers updated. 
+    echo -e "$GOOD NTP servers updated. $END"
     echo -e " "
     echo -e "$INFO starting and enabling unbound service $END"
     echo -e " "
