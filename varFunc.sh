@@ -172,7 +172,7 @@ function update_crontab(){
 
 function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END"
-    sudo cp ${PWD%/}/scriptBase/conf/pi-hole.conf /etc/unbound/unbound.conf.d/
+    sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
     echo -e "$GOOD Unbound configuration installed. $END"
 }
 
