@@ -21,6 +21,7 @@ log_location="${PWD%/} logs"
 
 # Log output
 
+mkdir logs
 exec > >(tee -a "$log_location/$currentHost-$dateTime".log)
 exec 2>&1
 
