@@ -17,7 +17,7 @@ END='\033[0m'       #  -> DEFAULT
 currentUser=$(whoami)
 currentHost=$(hostname)
 dateTime=$(date +"%Y-%m-%d %T")
-log_location="${PWD%/} logs"
+log_location="${PWD%/}/logs"
 
 # Log output
 
