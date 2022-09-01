@@ -19,6 +19,10 @@ currentHost=$(hostname)
 dateTime=$(date +"%Y-%m-%d %T")
 log_location="${PWD%/} logs"
 
+# Log output
+
+exec >> $log_location/'$currentHost-$dateTime'.log 2>&1
+
 # Reference Functions
 
 source varFunc.sh
