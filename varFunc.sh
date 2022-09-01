@@ -171,7 +171,7 @@ function update_crontab(){
 }
 
 function unboundconf(){
-    echo -e "$INFO Installing unbound configuration. $END$"
+    echo -e "$INFO Installing unbound configuration. $END"
     sudo cp ${PWD%/}/scriptBase/conf/pi-hole.conf /etc/unbound/unbound.conf.d/
     echo -e "$GOOD Unbound configuration installed. $END"
 }
@@ -180,6 +180,8 @@ function root_hints(){
     echo -e "$INFO Downloading and installing root hints file. $END"
     wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
     echo -e "$GOOD Root hints file successfully installed. $END"
+    echo -e " "
+    echo -e " "
 }
 
 function unbound_prereq(){
