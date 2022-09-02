@@ -36,12 +36,9 @@ function centos_upgrade(){
             [yY])
                 echo -e "$WARN Proceeding to upgrade.$END"
                 echo -e " "
-                echo -e "$INFO Fetching latest updates. $END"
+                echo -e "$INFO Fetching and installing latest updates. $END"
                 echo -e " "
-                sudo yum check-update
-                echo -e "$INFO Downloading & installing any new packages. $END"
-                echo -e " "
-                sudo yum upgrade
+                sudo yum update -y
                 echo -e " "
                 echo -e "$GOOD System upgrades complete! $END"
                 echo -e " "
