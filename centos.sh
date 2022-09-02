@@ -199,5 +199,3 @@ fi
 ## Password Reminder.
 
 echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
-
-## fix syslog fail for centos. Located at /var/log/messages.
