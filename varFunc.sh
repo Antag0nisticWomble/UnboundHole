@@ -212,8 +212,7 @@ function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END"
     echo -e " "
     sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-    sudo mkdir /etc/unbound/unbound.conf.d/
-    sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
+    sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf
     echo -e "$GOOD Unbound configuration installed. $END"
     echo -e " "
 }
