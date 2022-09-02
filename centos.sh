@@ -110,7 +110,7 @@ fi
 sudo systemctl restart unbound
 echo -e "$INFO Beginning pihole installation. $END"
 echo -e " "
-sudo curl -sSL https://install.pi-hole.net | sudo export PIHOLE_SELINUX=true bash
+sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true bash
 echo -e "$INFO Pihole successfully installed. $END"
 echo -e " "
 
