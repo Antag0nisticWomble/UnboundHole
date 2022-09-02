@@ -75,6 +75,15 @@ echo -e "$INFO Is the system fully updated? [Y / N] $END"
 
 unbound_prereq
 
+## Install root hints
+
+echo -e "$INFO Downloading and installing root hints file. $END"
+echo -e " "
+wget https://www.internic.net/domain/named.root -qO- | sudo tee /etc/unbound/root.hints
+echo -e " "
+echo -e "$GOOD Root hints file successfully installed. $END"
+echo -e " "
+
 ## Install unbound configuration
 
 unboundconf
@@ -94,7 +103,7 @@ echo -e "$INFO starting and enabling unbound service $END"
 echo -e " "
 sudo systemctl enable unbound
 sudo systemctl restart unbound
-wait 5
+
 if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
     then
         echo -e "$GOOD Unbound working correctly coninuing $END"
