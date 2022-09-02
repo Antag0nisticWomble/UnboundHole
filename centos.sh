@@ -123,3 +123,6 @@ sig_check
 ## Password Reminder.
 
 echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
+
+## export PIHOLE_SELINUX=true for line 93 failure.
+## fix syslog fail for centos. Located at /var/log/messages.
