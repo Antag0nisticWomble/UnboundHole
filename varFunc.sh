@@ -150,6 +150,7 @@ function ftl_tweaks(){
     sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
     echo -e "$GOOD Pihole FTL config complete. $END"
+    sudo systemctl restart pihole-FTL
     echo -e " "
 }
 
@@ -187,7 +188,14 @@ function timesync_conf(){
     echo -e "$INFO starting and enabling unbound service $END"
     echo -e " "
     sudo systemctl enable --now unbound
-    sudo systemctl start unbound
+    if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
+        then
+            echo -e "$GOOD Unbound working correctly coninuing $END"
+        else
+            echo -e "$ERROR Issue with installation. Please try again $END"
+            cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+            exit
+    fi
 }
 
 function update_crontab(){
@@ -203,6 +211,7 @@ function update_crontab(){
 function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END"
     echo -e " "
+    sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
     sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
     echo -e "$GOOD Unbound configuration installed. $END"
     echo -e " "
@@ -215,73 +224,4 @@ function root_hints(){
     echo -e "$GOOD Root hints file successfully installed. $END"
     echo -e " "
     echo -e " "
-}
-
-function unbound_prereq(){
-    echo -e "$INFO Installing required packages. $END"
-    echo -e " "
-    sudo apt install curl git unbound sqlite3 -y
-    echo -e "$GOOD Packages installed. $END"
-    echo -e " "
-}
-
-function sys_reboot(){
-    read sys_reboot_yn
-        case $sys_reboot_yn in
-            [yY])
-                echo -e "$WARN system rebooting in 10 seconds! $END"
-                sleep 10
-                sudo reboot
-                ;;
-            [nN])
-                echo -e "$INFO Please restart the script once system has rebooted. $END"
-                exit 0
-                ;;
-        esac
-}
-
-function system_upgrade(){
-    read sys_upgrade_yn
-        case $sys_upgrade_yn in
-            [yY])
-                echo -e "$WARN Proceeding to upgrade.$END"
-                echo -e " "
-                echo -e "$INFO Fetching latest updates. $END"
-                echo -e " "
-                sudo apt update
-                echo -e "$INFO Downloading & installing any new packages. $END"
-                echo -e " "
-                sudo apt full-upgrade -y -q
-                echo -e " "
-                echo -e "$INFO Performing snap refresh. $END"
-                echo -e " "
-                sudo snap refresh
-                echo -e " "
-                echo -e "$GOOD System upgrades complete! $END"
-                echo -e " "
-                echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                sys_reboot
-                ;;
-            [nN])
-                echo -e "$ERROR Please update and reboot system then try again. $END"
-                exit 0
-                ;;
-        esac
-}
-
-function check_updated(){
-    echo -e "$INFO Is the system fully updated? [Y / N] $END"
-        read sys_updated_yn
-            case $sys_updated_yn in
-                [yY])
-                    echo -e "$GOOD Continuing to installation Phase. $END"
-                    echo -e " "
-                    unbound_prereq
-                    ;;
-                [nN])
-                    echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-                    echo -e " "
-                    system_upgrade
-                    ;;
-            esac
 }

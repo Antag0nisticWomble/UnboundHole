@@ -1,7 +1,7 @@
 #!/bin/bash
 # Filename: Unboundhole.sh
-# Version: 1.2
-# Creation: 1 Sept 2022
+# Version: 1.3
+# Creation: 2 Sept 2022
 # Author: Antag0nisticWomble
 
 # Output Formatting
@@ -29,62 +29,25 @@ exec 2>&1
 
 source varFunc.sh
 
-## Check Updated
+## Check OS
 
-check_updated
-
-## Install Unbound
-
-unbound_prereq
-
-## Download root hints file
-
-root_hints
-
-## Install unbound configuration
-
-unboundconf
-
-## Add whitelist script and root hints update to cron
-
-update_crontab
-
-## Setup time servers for unbound
-
-timesync_conf
-
-## Install pihole
-
-pihole
-
-## Disable pihole cache and dnssec
-
-pihole_conf
-
-## Make pihole config persistent
-
-config_persist
-
-## Tweal FTL for better performance with unbound
-
-ftl_tweaks
-
-## Add community adlists to gravity
-
-adlists
-
-## Update gravity database
-
-gravity_up
-
-## Pull in whitelist scripts
-
-whitelist
-
-## Check Unbound DNSSEC and Pihole are functioning correctly
-
-sig_check
-
-## Password Reminder.
-
-echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
+if [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
+    then
+        echo -e "$INFO Ubuntu Detected proceeding. $END" 
+        bash ubuntu.sh
+fi
+if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
+    then
+        echo -e "$INFO Debian Detected Proceeding $END"
+        bash debian.sh
+fi
+if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
+    then 
+        echo -e "$INFO CentOS Detected Proceeding $END"
+        bash centos.sh
+fi
+if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
+    then
+        echo -e "$INFO Fedora Detected Proceeding $END"
+        bash fedora.sh
+fi
