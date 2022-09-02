@@ -212,6 +212,7 @@ function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END"
     echo -e " "
     sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
+    sudo mkdir /etc/unbound/unbound.conf.d/
     sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf.d/
     echo -e "$GOOD Unbound configuration installed. $END"
     echo -e " "
@@ -221,7 +222,7 @@ function root_hints(){
     echo -e "$INFO Downloading and installing root hints file. $END"
     echo -e " "
     wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-    echo -e "$GOOD Root hints file successfully installed. $END"
     echo -e " "
+    echo -e "$GOOD Root hints file successfully installed. $END"
     echo -e " "
 }
