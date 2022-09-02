@@ -139,11 +139,13 @@ gravity_up
 cd /opt/
     
 ## Download whitelist scrips for pihole.
+
 echo -e "$INFO Install whitelist script. $END"
 echo -e " "
 sudo git clone https://github.com/anudeepND/whitelist.git 
 
-# Remove clear console line.
+## Remove clear console line.
+
 sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
 
 ## Move to Whitelist Directory.
