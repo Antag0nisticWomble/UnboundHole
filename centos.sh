@@ -6,10 +6,13 @@
 
 source varFunc.sh
 
+sudo touch /etc/systemd/timesyncd.conf
+
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     echo -e " "
-    sudo yum install curl python3 unbound sqlite3 -y
+    sudo yum install epel-release -y
+    sudo yum install curl python3 unbound sqlite -y
     echo -e "$GOOD Packages installed. $END"
     echo -e " "
     root_hints
