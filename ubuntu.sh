@@ -9,7 +9,7 @@ source varFunc.sh
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     echo -e " "
-    sudo apt install curl git unbound sqlite3 -y
+    sudo apt install curl unbound sqlite3 -y
     echo -e "$GOOD Packages installed. $END"
     echo -e " "
     root_hints
