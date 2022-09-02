@@ -15,7 +15,6 @@ function unbound_prereq(){
     sudo yum install curl python3 unbound sqlite -y
     echo -e "$GOOD Packages installed. $END"
     echo -e " "
-    root_hints
 }
 
 function sys_reboot(){
