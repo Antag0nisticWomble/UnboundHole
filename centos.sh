@@ -97,6 +97,14 @@ unboundconf
 
 update_crontab
 
+## Setup root.key for DNSSEC
+cat <<EOF > /etc/ubound/root-auto-trust-anchor-file.conf
+server:
+    # The following line will configure unbound to perform cryptographic
+    # DNSSEC validation using the root trust anchor.
+    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+EOF
+
 ## Setup time servers for unbound
 
 echo -e "$INFO Updating NTP Server configuration $END"
@@ -120,7 +128,6 @@ fi
 
 ## Install pihole
 
-sudo systemctl restart unbound
 echo -e "$INFO Beginning pihole installation. $END"
 echo -e " "
 sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true PIHOLE_SKIP_OS_CHECK=true bash -l
@@ -182,6 +189,8 @@ if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL
         echo -e "$GOOD Bad signature test passed successfully. $END"
         echo -e " "
     else
+        cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+        dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
         echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
         $log_location $END"
         echo -e " "
@@ -192,6 +201,7 @@ if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')"
         echo -e " "
     else
         cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+        dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
         echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
         $log_location $END"
         echo -e " "
