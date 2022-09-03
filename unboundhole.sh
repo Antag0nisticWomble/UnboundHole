@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # Filename: Unboundhole.sh
 # Version: 1.3
 # Creation: 2 Sept 2022
@@ -11,8 +11,8 @@ source varFunc.sh
 ## Log output
 
 mkdir logs
-exec > >(tee -a "$log_location/$currentHost-$dateTime".log)
-exec 2>&1
+# exec > >(tee -a "$log_location/$currentHost-$dateTime".log) #disabled logging output due to interference with pihole script.
+# exec 2>&1
 
 ## Check OS
 
