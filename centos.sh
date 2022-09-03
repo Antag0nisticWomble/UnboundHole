@@ -97,14 +97,6 @@ unboundconf
 
 update_crontab
 
-## Setup root.key for DNSSEC
-cat <<EOF > /etc/ubound/root-auto-trust-anchor-file.conf
-server:
-    # The following line will configure unbound to perform cryptographic
-    # DNSSEC validation using the root trust anchor.
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
-EOF
-
 ## Setup time servers for unbound
 
 echo -e "$INFO Updating NTP Server configuration $END"
