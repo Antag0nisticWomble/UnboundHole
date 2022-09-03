@@ -6,8 +6,6 @@
 
 source varFunc.sh
 
-sudo touch /etc/systemd/timesyncd.conf
-
 ## Disable SELinux (Required for pihole and unbound to function)
 
 sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
