@@ -82,7 +82,7 @@ unbound_prereq
 
 echo -e "$INFO Downloading and installing root hints file. $END"
 echo -e " "
-wget https://www.internic.net/domain/named.root -qO- | sudo tee /etc/unbound/root.hints
+wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
 echo -e " "
 echo -e "$GOOD Root hints file successfully installed. $END"
 echo -e " "

@@ -215,7 +215,7 @@ function update_crontab(){
     echo -e "$INFO Updating Crontab. $END"
     echo -e " "
     sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
-    sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /etc/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
+    sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
     sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
     echo -e "$GOOD Crontab Updated. $END"
     echo -e " "
@@ -233,7 +233,7 @@ function unboundconf(){
 function root_hints(){
     echo -e "$INFO Downloading and installing root hints file. $END"
     echo -e " "
-    wget https://www.internic.net/domain/named.root -qO- | sudo tee /etc/unbound/root.hints
+    wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
     echo -e " "
     echo -e "$GOOD Root hints file successfully installed. $END"
     echo -e " "
