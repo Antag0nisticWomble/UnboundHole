@@ -4,6 +4,19 @@
 # Creation: 1 Sept 2022
 # Author: Antag0nisticWomble
 
+## Output Formatting
+
+ERROR='\033[1;91m'  #  -> RED
+GOOD='\033[1;92m'   #  -> GREEN
+WARN='\033[1;93m'   #  -> YELLOW
+INFO='\033[1;96m'   #  -> BLUE
+END='\033[0m'       #  -> DEFAULT
+
+## Output Variables
+
+currentUser=$(whoami)
+currentHost=$(hostname)
+dateTime=$(date +"%Y-%m-%d %T")
 log_location="${PWD%/}/logs"
 
 # Functions

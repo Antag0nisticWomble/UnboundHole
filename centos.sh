@@ -8,6 +8,11 @@ source varFunc.sh
 
 sudo touch /etc/systemd/timesyncd.conf
 
+## Disable SELinux (Required for pihole and unbound to function)
+
+sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+sudo setenforce 0
+
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     echo -e " "
@@ -118,7 +123,7 @@ fi
 sudo systemctl restart unbound
 echo -e "$INFO Beginning pihole installation. $END"
 echo -e " "
-sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true PIHOLE_SKIP_OS_CHECK=true bash
+sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true PIHOLE_SKIP_OS_CHECK=true bash -l
 echo -e "$INFO Pihole successfully installed. $END"
 echo -e " "
 
