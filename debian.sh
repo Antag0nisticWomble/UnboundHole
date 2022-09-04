@@ -30,9 +30,9 @@ function sys_reboot(){
         esac
 }
 
-function ubuntu_upgrade(){
-    read ubuntu_upgrade_yn
-        case $ubuntu_upgrade_yn in
+function debian_upgrade(){
+    read debian_upgrade_yn
+        case $debian_upgrade_yn in
             [yY])
                 echo -e "$WARN Proceeding to upgrade.$END"
                 echo -e " "
@@ -61,7 +61,7 @@ function ubuntu_upgrade(){
 
 
 echo -e "$INFO Is the system fully updated? [Y / N] $END"
-    read ubuntu_updated_yn
+    read debian_updated_yn
         case $ububtu_updated_yn in
             [yY])
                 echo -e "$GOOD Continuing to installation Phase. $END"
@@ -71,7 +71,7 @@ echo -e "$INFO Is the system fully updated? [Y / N] $END"
             [nN])
                 echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
                 echo -e " "
-                ubuntu_upgrade
+                debian_upgrade
                 ;;
         esac
 
