@@ -14,7 +14,6 @@ sudo setenforce 0
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     echo -e " "
-    sudo dnf install epel-release -y
     sudo dnf install curl python3 unbound sqlite -y
     echo -e "$GOOD Packages installed. $END"
     echo -e " "
