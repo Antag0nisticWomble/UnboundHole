@@ -1,5 +1,5 @@
 #!/bin/bash
-# Filename: centos.sh
+# Filename: fedora.sh
 # Version: 1.3
 # Creation: 2 Sept 2022
 # Author: Antag0nisticWomble
@@ -35,9 +35,9 @@ function sys_reboot(){
         esac
 }
 
-function centos_upgrade(){
-    read centos_upgrade_yn
-        case $centos_upgrade_yn in
+function fedora_upgrade(){
+    read fedora_upgrade_yn
+        case $fedora_upgrade_yn in
             [yY])
                 echo -e "$WARN Proceeding to upgrade.$END"
                 echo -e " "
@@ -59,8 +59,8 @@ function centos_upgrade(){
 
 
 echo -e "$INFO Is the system fully updated? [Y / N] $END"
-    read centos_updated_yn
-        case $centos_updated_yn in
+    read fedora_updated_yn
+        case $fedora_updated_yn in
             [yY])
                 echo -e "$GOOD Continuing to installation Phase. $END"
                 echo -e " "
@@ -69,7 +69,7 @@ echo -e "$INFO Is the system fully updated? [Y / N] $END"
             [nN])
                 echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
                 echo -e " "
-                centos_upgrade
+                fedora_upgrade
                 ;;
         esac
 
