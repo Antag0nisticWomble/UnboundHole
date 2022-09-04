@@ -14,8 +14,8 @@ sudo setenforce 0
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
     echo -e " "
-    sudo yum install epel-release -y
-    sudo yum install curl python3 unbound sqlite -y
+    sudo dnf install epel-release -y
+    sudo dnf install curl python3 unbound sqlite -y
     echo -e "$GOOD Packages installed. $END"
     echo -e " "
 }
@@ -43,7 +43,7 @@ function centos_upgrade(){
                 echo -e " "
                 echo -e "$INFO Fetching and installing latest updates. $END"
                 echo -e " "
-                sudo yum update -y
+                sudo dnf update -y
                 echo -e " "
                 echo -e "$GOOD System upgrades complete! $END"
                 echo -e " "
