@@ -98,6 +98,7 @@ update_crontab
 
 echo -e "$INFO starting and enabling unbound service $END"
 echo -e " "
+chown -R unbound:unbound /var/lib/unbound
 sudo systemctl enable unbound
 sudo systemctl restart unbound
 
