@@ -118,7 +118,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl restart pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         sig_check
@@ -207,7 +207,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl restart pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         sig_check
@@ -298,7 +298,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl restart pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         echo -e "$INFO Checking DNSSEC is working $END"
@@ -414,7 +414,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl restart pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         echo -e "$INFO Checking DNSSEC is working $END"
