@@ -27,71 +27,53 @@ function sig_check(){
         if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
             then
                 echo -e "$GOOD Bad signature test passed successfully. $END"
-                echo -e " "
             else
                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
                 $log_location $END"
-                echo -e " "
         fi
         if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then
                 echo -e "$GOOD Good signature test passed successfully. $END"
-                echo -e " "
             else
                 cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
                 $log_location $END"
-                echo -e " "
                 exit
         fi
         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then    
                 echo -e "$GOOD Pihole test complete. Installation complete. $END"
-                echo -e " "
             else
                 cat /var/log/syslog | grep -i pihole > $log_location/pihole.log
                 echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
                 $log_location. $END"
-                echo -e " "
                 exit
         fi
 }
 
 function whitelist(){
-    cd /opt/
-    
     ## Download whitelist scrips for pihole.
     echo -e "$INFO Install whitelist script. $END"
-    echo -e " "
-    sudo git clone https://github.com/anudeepND/whitelist.git 
+    sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
     
     # Remove clear console line.
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
 
-    ## Move to Whitelist Directory.
-
-    cd /opt/whitelist/scripts
-
     ## Run Whitelist script for first time. (Cron will run this on schedule).
 
     echo -e "$INFO Starting whitelist script. $END"
-    echo -e " "
-    sudo ./whitelist.py
+    sudo pyhton3 /opt/whitelist/scripts/whitelist.py
     echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"
-    echo -e " "
 }
 
 function gravity_up(){
     echo -e "$INFO Pulling in new lists into gravity. $END"
-    echo -e " "
     sudo pihole -g
     echo -e "$GOOD Lists updated successfully. $END"
-    echo -e " "
 }
 
 function adlists(){
     echo -e "$INFO Adding new lists to database. $END"
-    echo -e " "
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt ', 1, 'SimpleTrackers');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt', 1, 'SimpleAds');"
     sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts_without_controversies.txt', 1, 'KADHosts');"
@@ -154,52 +136,40 @@ function adlists(){
     ## sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('', 1, '');"
     ## ^^^ Placeholder reference to add more lists ^^^
     echo -e "$GOOD New adlists added to database. $END"
-    echo -e " "
 }
 
 function ftl_tweaks(){
     echo -e "$INFO Adding tweaks to pihole-FTL. $END"
-    echo -e " "
     sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
     echo -e "$GOOD Pihole FTL config complete. $END"
     sudo systemctl restart pihole-FTL
-    echo -e " "
 }
 
 function config_persist(){
     echo -e "$INFO Making pihole config persistent. $END"
-    echo -e " "
     sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
     echo -e "$GOOD Config changes saved. $END"
-    echo -e " "
 }
 
 function pihole_conf(){
     echo -e "$INFO Disabling pihole cache. $END"
-    echo -e " "
     sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
     echo -e "$GOOD Pihole cache disabled. $END"
-    echo -e " "
 }
 
 function pihole(){
     sudo systemctl restart unbound
     echo -e "$INFO Beginning pihole installation. $END"
-    echo -e " "
     sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
     echo -e "$INFO Pihole successfully installed. $END"
-    echo -e " "
 }
 
 function timesync_conf(){
     echo -e "$INFO Updating NTP Server configuration $END"
-    echo -e " "
     sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
     echo -e "$GOOD NTP servers updated. $END"
-    echo -e " "
     echo -e "$INFO starting and enabling unbound service $END"
-    echo -e " "
     sudo systemctl enable --now unbound
     if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
         then
@@ -213,28 +183,21 @@ function timesync_conf(){
 
 function update_crontab(){
     echo -e "$INFO Updating Crontab. $END"
-    echo -e " "
     sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
     sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
     sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
     echo -e "$GOOD Crontab Updated. $END"
-    echo -e " "
 }
 
 function unboundconf(){
     echo -e "$INFO Installing unbound configuration. $END"
-    echo -e " "
     sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
     sudo cp ${PWD%/}/pi-hole.conf /etc/unbound/unbound.conf
     echo -e "$GOOD Unbound configuration installed. $END"
-    echo -e " "
 }
 
 function root_hints(){
     echo -e "$INFO Downloading and installing root hints file. $END"
-    echo -e " "
     wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-    echo -e " "
     echo -e "$GOOD Root hints file successfully installed. $END"
-    echo -e " "
 }

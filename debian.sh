@@ -8,10 +8,8 @@ source varFunc.sh
 
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
-    echo -e " "
     sudo apt install curl python3 unbound sqlite3 -y
     echo -e "$GOOD Packages installed. $END"
-    echo -e " "
     root_hints
 }
 
@@ -35,20 +33,11 @@ function debian_upgrade(){
         case $debian_upgrade_yn in
             [yY])
                 echo -e "$WARN Proceeding to upgrade.$END"
-                echo -e " "
                 echo -e "$INFO Fetching latest updates. $END"
-                echo -e " "
                 sudo apt update
                 echo -e "$INFO Downloading & installing any new packages. $END"
-                echo -e " "
                 sudo apt full-upgrade -y
-                echo -e " "
-                echo -e "$INFO Performing snap refresh. $END"
-                echo -e " "
-                sudo snap refresh
-                echo -e " "
                 echo -e "$GOOD System upgrades complete! $END"
-                echo -e " "
                 echo -e "$INFO Would you like to reboot the system now? Y/N $END"
                 sys_reboot
                 ;;
@@ -62,15 +51,13 @@ function debian_upgrade(){
 
 echo -e "$INFO Is the system fully updated? [Y / N] $END"
     read debian_updated_yn
-        case $ububtu_updated_yn in
+        case $debian_updated_yn in
             [yY])
                 echo -e "$GOOD Continuing to installation Phase. $END"
-                echo -e " "
                 unbound_prereq
                 ;;
             [nN])
                 echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-                echo -e " "
                 debian_upgrade
                 ;;
         esac
@@ -126,4 +113,5 @@ sig_check
 
 ## Password Reminder.
 
-echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
+echo -e "$GOOD Installation complete. Please reboot. $END"
+echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"

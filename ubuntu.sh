@@ -8,10 +8,8 @@ source varFunc.sh
 
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
-    echo -e " "
     sudo apt install curl unbound sqlite3 -y
     echo -e "$GOOD Packages installed. $END"
-    echo -e " "
     root_hints
 }
 
@@ -35,20 +33,13 @@ function ubuntu_upgrade(){
         case $ubuntu_upgrade_yn in
             [yY])
                 echo -e "$WARN Proceeding to upgrade.$END"
-                echo -e " "
                 echo -e "$INFO Fetching latest updates. $END"
-                echo -e " "
                 sudo apt update
                 echo -e "$INFO Downloading & installing any new packages. $END"
-                echo -e " "
                 sudo apt full-upgrade -y
-                echo -e " "
                 echo -e "$INFO Performing snap refresh. $END"
-                echo -e " "
                 sudo snap refresh
-                echo -e " "
                 echo -e "$GOOD System upgrades complete! $END"
-                echo -e " "
                 echo -e "$INFO Would you like to reboot the system now? Y/N $END"
                 sys_reboot
                 ;;
@@ -126,4 +117,5 @@ sig_check
 
 ## Password Reminder.
 
-echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
+echo -e "$GOOD Installation complete. Please Reboot.$END"
+echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"

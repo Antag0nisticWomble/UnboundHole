@@ -13,11 +13,9 @@ sudo setenforce 0
 
 function unbound_prereq(){
     echo -e "$INFO Installing required packages. $END"
-    echo -e " "
     sudo yum install epel-release -y
     sudo yum install curl python3 unbound sqlite -y
     echo -e "$GOOD Packages installed. $END"
-    echo -e " "
 }
 
 function sys_reboot(){
@@ -147,7 +145,6 @@ cd /opt/
 ## Download whitelist scrips for pihole.
 
 echo -e "$INFO Install whitelist script. $END"
-echo -e " "
 sudo git clone https://github.com/anudeepND/whitelist.git 
 
 ## Remove clear console line.
@@ -161,47 +158,38 @@ cd /opt/whitelist/scripts
 ## Run Whitelist script for first time. (Cron will run this on schedule).
 
 echo -e "$INFO Starting whitelist script. $END"
-echo -e " "
 sudo python3 ./whitelist.py
 echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"
-echo -e " "
 
 ## Check Unbound DNSSEC and Pihole are functioning correctly
 
 echo -e "$INFO Checking DNSSEC is working $END"
-echo -e " "
 if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
     then
         echo -e "$GOOD Bad signature test passed successfully. $END"
-        echo -e " "
     else
         cat /var/log/messages | grep -i unbound > $log_location/unbound.log
         dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
         echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
         $log_location $END"
-        echo -e " "
 fi
 if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
     then
         echo -e "$GOOD Good signature test passed successfully. $END"
-        echo -e " "
     else
         cat /var/log/messages | grep -i unbound > $log_location/unbound.log
         dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
         echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
         $log_location $END"
-        echo -e " "
         exit 1
 fi
 if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
     then    
         echo -e "$GOOD Pihole test complete. Installation complete. $END"
-        echo -e " "
     else
         cat /var/log/messages | grep -i pihole > $log_location/pihole.log
         echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
         $log_location. $END"
-        echo -e " "
         exit 1
 fi
 
