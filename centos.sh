@@ -195,4 +195,5 @@ fi
 
 ## Password Reminder.
 
-echo -e "$GOOD Installation complete.$END""$WARN Remember to run sudo pihole -a -p to change your password. $END"
+echo -e "$GOOD Installation complete. Please reboot. $END"
+echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
