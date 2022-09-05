@@ -5,7 +5,7 @@ A simple pihole + unbound install script.
 Please be warned the community lists included with this config amount to over 7 million addresses, you may have to manually whitelist some sources. 
 I don't use social media so a lot of these are included in the lists. Pornography is also blocked by the lists inclueded in this script. You have been warned!
 
-This script is a work in progress so be warned you may encounter issues.
+This script is a work in progress so you may encounter issues.
 
 ## Important ##
 If using Centos or Fedora this script will disable SELinux as Unbound and Pihole do not function correctly with it enabled.
