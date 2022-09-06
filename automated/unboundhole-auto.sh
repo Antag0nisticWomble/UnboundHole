@@ -21,7 +21,7 @@ END='\033[0m'       #  -> DEFAULT
 currentUser=$(whoami)
 currentHost=$(hostname)
 dateTime=$(date +"%Y-%m-%d %T")
-log_location="${PWD%/}/logs"
+log_location="${PWD%/}/uhole_logs"
 
 ## Common Functions
 
@@ -74,6 +74,20 @@ function sig_check(){
         fi
 }
 
+function sysreboot(){
+    echo -e "$INFO Would you like to reboot the system now? Y/N $END"
+        read sys_reboot_yn
+            case $sys_reboot_yn in
+                [yY])
+                    echo -e "$WARN system rebooting in 10 seconds! $END"
+                    sudo shutdown -r 10
+                    ;;
+                [nN])
+                    echo -e "$INFO Please restart the script once system has rebooted. $END"
+                    exit 0
+                    ;;
+            esac
+}
 ## -------------------------  Script start  ------------------------- ##
 
 # Ubuntu
@@ -142,18 +156,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                     echo -e "$INFO Performing snap refresh. $END"
                                     sudo snap refresh
                                     echo -e "$GOOD System upgrades complete! $END"
-                                    echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                    read sys_reboot_yn
-                                        case $sys_reboot_yn in
-                                            [yY])
-                                                echo -e "$WARN system rebooting in 10 seconds! $END"
-                                                sudo shutdown -r 10
-                                                ;;
-                                            [nN])
-                                                echo -e "$INFO Please restart the script once system has rebooted. $END"
-                                                exit 0
-                                                ;;
-                                        esac
+                                    sysreboot
                                     ;;
                                 [nN])
                                     echo -e "$ERROR Please update and reboot system then try again. $END"
@@ -229,18 +232,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                     echo -e "$INFO Downloading & installing any new packages. $END"
                                     sudo apt full-upgrade -y
                                     echo -e "$GOOD System upgrades complete! $END"
-                                    echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                    read sys_reboot_yn
-                                        case $sys_reboot_yn in
-                                            [yY])
-                                                echo -e "$WARN system rebooting in 10 seconds! $END"
-                                                sudo shutdown -r 10
-                                                ;;
-                                            [nN])
-                                                echo -e "$INFO Please restart the script once system has rebooted. $END"
-                                                exit 0
-                                                ;;
-                                        esac
+                                    sysreboot
                                     ;;
                                 [nN])
                                     echo -e "$ERROR Please update and reboot system then try again. $END"
@@ -346,19 +338,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                                         echo -e "$INFO Fetching and installing latest updates. $END"
                                         sudo dnf update -y
                                         echo -e "$GOOD System upgrades complete! $END"
-                                        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                        read sys_reboot_yn
-                                            case $sys_reboot_yn in
-                                                [yY])
-                                                    echo -e "$WARN system rebooting in 10 seconds! $END"
-                                                    sudo shutdown -r 10
-                                                    ;;
-                                                [nN])
-                                                    echo -e "$INFO Please restart the script once system has rebooted. $END"
-                                                    exit 0
-                                                    ;;
-                                            esac
+                                        sysreboot
                                         ;;
                                     [nN])
                                         echo -e "$ERROR Please update and reboot system then try again. $END"
@@ -462,19 +442,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                                         echo -e "$INFO Fetching and installing latest updates. $END"
                                         sudo dnf update -y
                                         echo -e "$GOOD System upgrades complete! $END"
-                                        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                        echo -e "$INFO Would you like to reboot the system now? Y/N $END"
-                                        read sys_reboot_yn
-                                            case $sys_reboot_yn in
-                                                [yY])
-                                                    echo -e "$WARN system rebooting in 10 seconds! $END"
-                                                    sudo shutdown -r 10
-                                                    ;;
-                                                [nN])
-                                                    echo -e "$INFO Please restart the script once system has rebooted. $END"
-                                                    exit 0
-                                                    ;;
-                                            esac
+                                        sysreboot
                                         ;;
                                     [nN])
                                         echo -e "$ERROR Please update and reboot system then try again. $END"
