@@ -57,10 +57,6 @@ done
  
 Log_Open
 
-## Create log directory
-
-mkdir uhole_logs
-
 ## Output Formatting
 
 ERROR='\033[1;91m'  #  -> RED
