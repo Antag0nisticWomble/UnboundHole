@@ -4,12 +4,12 @@
 # Creation: 5 Sept 2022
 # Author: Antag0nisticWomble
 
-export LOGDIR="${PWD%/}/uhole_logs"
+export LOGDIR="${PWD%/}"
 export DATE=`date +"%Y%m%d"`
 export DATETIME=`date +"%Y%m%d_%H%M%S"`
  
 ScriptName=`basename $0`
-Job=`basename $0 .sh`"Unboundhole installer"
+Job=`basename $0 .sh`
 JobClass=`basename $0 .sh`
  
 function Log_Open() {
@@ -17,15 +17,15 @@ function Log_Open() {
                 einfo "Not logging to a logfile because -Z option specified." #(*)
         else
                 [[ -d $LOGDIR/$JobClass ]] || mkdir -p $LOGDIR/$JobClass
-                Pipe=${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
+                Pipe=/${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
                 mkfifo -m 700 $Pipe
-                LOGFILE=${LOGDIR}/$JobClass/${Job}_${DATETIME}.log
+                LOGFILE=/${LOGDIR}/$JobClass/${Job}_${DATETIME}.log
                 exec 3>&1
                 tee ${LOGFILE} <$Pipe >&3 &
                 teepid=$!
                 exec 1>$Pipe
                 PIPE_OPENED=1
-                enotify Logging to $LOGFILE  # (*)
+                enotify="Logging to $LOGFILE  # (*)"
                 [ $SUDO_USER ] && enotify "Sudo user: $SUDO_USER" #(*)
         fi
 }
@@ -501,3 +501,5 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
 fi
 
 Log_Close
+
+rm $Pipe
