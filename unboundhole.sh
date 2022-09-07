@@ -11,8 +11,10 @@ source varFunc.sh
 ## Log output
 
 mkdir logs
-# exec > >(tee -a "$log_location/$currentHost-$dateTime".log) #disabled logging output due to interference with pihole script.
-# exec 2>&1
+
+log=log_file.txt
+printf "Log File - " > $log
+date >> $log
 
 ## Check OS
 

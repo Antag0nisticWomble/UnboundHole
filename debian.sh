@@ -48,7 +48,6 @@ function debian_upgrade(){
         esac
 }
 
-
 echo -e "$INFO Is the system fully updated? [Y / N] $END"
     read debian_updated_yn
         case $debian_updated_yn in
@@ -61,7 +60,6 @@ echo -e "$INFO Is the system fully updated? [Y / N] $END"
                 debian_upgrade
                 ;;
         esac
-
 
 ## Install prerequisites
 

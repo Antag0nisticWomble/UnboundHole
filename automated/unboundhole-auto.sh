@@ -26,15 +26,9 @@ log_location="${PWD%/}/uhole_logs"
 ## Common Functions
 
 function whitelist(){
-    ## Download whitelist scrips for pihole.
     echo -e "$INFO Installing whitelist script. $END"
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
-    
-    # Remove clear console line.
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-
-    ## Run Whitelist script for first time. (Cron will run this on schedule).
-
     echo -e "$INFO Starting whitelist script. $END"
     sudo pyhton3 /opt/whitelist/scripts/whitelist.py
 }
@@ -43,7 +37,6 @@ function gravity_up(){
     echo -e "$INFO Pulling in new lists into gravity. $END"
     sudo pihole -g
 }
-
 
 function sig_check(){
     echo -e "$INFO Checking DNSSEC is working $END"
@@ -88,6 +81,7 @@ function sysreboot(){
                     ;;
             esac
 }
+
 ## -------------------------  Script start  ------------------------- ##
 
 # Ubuntu
@@ -254,7 +248,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                 case $centos_updated_yn in
                     [yY])
                         echo -e "$WARN Disabling SELinux for pihole/unbound operation"
-                        sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permisive/' /etc/selinux/config
                         sudo setenforce 0
                         echo -e "$GOOD Continuing to installation Phase. $END"
                         echo -e "$INFO Installing required packages. $END"
@@ -359,7 +353,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                 case $fedora_updated_yn in
                     [yY])
                         echo -e "$WARN Disabling SELinux for pihole/unbound operation"
-                        sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permisive/' /etc/selinux/config
                         sudo setenforce 0
                         echo -e "$GOOD Continuing to installation Phase. $END"
                         echo -e "$INFO Installing required packages. $END"
