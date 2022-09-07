@@ -4,6 +4,59 @@
 # Creation: 5 Sept 2022
 # Author: Antag0nisticWomble
 
+export LOGDIR="${PWD%/}/uhole_logs"
+export DATE=`date +"%Y%m%d"`
+export DATETIME=`date +"%Y%m%d_%H%M%S"`
+ 
+ScriptName=`basename $0`
+Job=`basename $0 .sh`"Unboundhole installer"
+JobClass=`basename $0 .sh`
+ 
+function Log_Open() {
+        if [ $NO_JOB_LOGGING ] ; then
+                einfo "Not logging to a logfile because -Z option specified." #(*)
+        else
+                [[ -d $LOGDIR/$JobClass ]] || mkdir -p $LOGDIR/$JobClass
+                Pipe=${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
+                mkfifo -m 700 $Pipe
+                LOGFILE=${LOGDIR}/$JobClass/${Job}_${DATETIME}.log
+                exec 3>&1
+                tee ${LOGFILE} <$Pipe >&3 &
+                teepid=$!
+                exec 1>$Pipe
+                PIPE_OPENED=1
+                enotify Logging to $LOGFILE  # (*)
+                [ $SUDO_USER ] && enotify "Sudo user: $SUDO_USER" #(*)
+        fi
+}
+ 
+function Log_Close() {
+        if [ ${PIPE_OPENED} ] ; then
+                exec 1<&3
+                sleep 0.2
+                ps --pid $teepid >/dev/null
+                if [ $? -eq 0 ] ; then
+                        # a wait $teepid whould be better but some
+                        # commands leave file descriptors open
+                        sleep 1
+                        kill  $teepid
+                fi
+                rm $Pipe
+                unset PIPE_OPENED
+        fi
+}
+ 
+OPTIND=1
+while getopts ":Z" opt ; do
+        case $opt in
+                Z)
+                        NO_JOB_LOGGING="true"
+                        ;;
+        esac
+done
+ 
+Log_Open
+
 ## Create log directory
 
 mkdir uhole_logs
@@ -18,10 +71,10 @@ END='\033[0m'       #  -> DEFAULT
 
 ## Output Variables
 
-currentUser=$(whoami)
-currentHost=$(hostname)
-dateTime=$(date +"%Y-%m-%d %T")
-log_location="${PWD%/}/uhole_logs"
+#currentUser=$(whoami)
+#currentHost=$(hostname)
+#dateTime=$(date +"%Y-%m-%d %T")
+#log_location="${PWD%/}/uhole_logs"
 
 ## Common Functions
 
@@ -45,24 +98,24 @@ function sig_check(){
                 echo -e "$GOOD Bad signature test passed successfully. $END"
             else
                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                $log_location $END"
+                $LOGDIR $END"
         fi
         if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then
                 echo -e "$GOOD Good signature test passed successfully. $END"
             else
-                cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                $log_location $END"
+                $LOGDIR $END"
                 exit
         fi
         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then    
                 echo -e "$GOOD Pihole test complete. Installation complete. $END"
             else
-                cat /var/log/syslog | grep -i pihole > $log_location/pihole.log
+                cat /var/log/syslog | grep -i pihole > $LOGDIR/pihole.log
                 echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                $log_location. $END"
+                $LOGDIR. $END"
                 exit
         fi
 }
@@ -116,7 +169,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
                                 exit
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
@@ -194,7 +247,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
                                 exit
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
@@ -274,7 +327,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 exit 1
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
@@ -296,28 +349,28 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                             then
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                                $log_location $END"
+                                $LOGDIR $END"
                         fi
                         if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                                $log_location $END"
+                                $LOGDIR $END"
                                 exit 1
                         fi
                         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then    
                             echo -e "$GOOD Pihole test complete. Installation complete. $END"
                             else
-                            cat /var/log/messages | grep -i pihole > $log_location/pihole.log
+                            cat /var/log/messages | grep -i pihole > $LOGDIR/pihole.log
                             echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                            $log_location. $END"
+                            $LOGDIR. $END"
                             exit 1
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
@@ -378,7 +431,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 exit 1
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
@@ -400,28 +453,28 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                             then
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                                $log_location $END"
+                                $LOGDIR $END"
                         fi
                         if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
-                                cat /var/log/messages | grep -i unbound > $log_location/unbound.log
+                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
                                 dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                                $log_location $END"
+                                $LOGDIR $END"
                                 exit 1
                         fi
                         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then    
                             echo -e "$GOOD Pihole test complete. Installation complete. $END"
                             else
-                            cat /var/log/messages | grep -i pihole > $log_location/pihole.log
+                            cat /var/log/messages | grep -i pihole > $LOGDIR/pihole.log
                             echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                            $log_location. $END"
+                            $LOGDIR. $END"
                             exit 1
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
@@ -446,3 +499,5 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         ;;
                 esac
 fi
+
+Log_Close
