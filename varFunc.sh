@@ -52,15 +52,9 @@ function sig_check(){
 }
 
 function whitelist(){
-    ## Download whitelist scrips for pihole.
     echo -e "$INFO Install whitelist script. $END"
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
-    
-    # Remove clear console line.
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-
-    ## Run Whitelist script for first time. (Cron will run this on schedule).
-
     echo -e "$INFO Starting whitelist script. $END"
     sudo pyhton3 /opt/whitelist/scripts/whitelist.py
     echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"

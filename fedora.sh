@@ -8,7 +8,7 @@ source varFunc.sh
 
 ## Disable SELinux (Required for pihole and unbound to function)
 
-sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+sudo sed -i 's/SELINUX=enforcing/SELINUX=permisive/' /etc/selinux/config
 sudo setenforce 0
 
 function unbound_prereq(){

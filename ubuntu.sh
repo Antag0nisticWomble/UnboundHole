@@ -50,7 +50,6 @@ function ubuntu_upgrade(){
         esac
 }
 
-
 echo -e "$INFO Is the system fully updated? [Y / N] $END"
     read ubuntu_updated_yn
         case $ububtu_updated_yn in
@@ -65,7 +64,6 @@ echo -e "$INFO Is the system fully updated? [Y / N] $END"
                 ubuntu_upgrade
                 ;;
         esac
-
 
 ## Install prerequisites
 
