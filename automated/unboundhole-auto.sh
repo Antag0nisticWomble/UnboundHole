@@ -17,7 +17,7 @@ function Log_Open() {
                 einfo "Not logging to a logfile because -Z option specified." #(*)
         else
                 [[ -d $LOGDIR/$JobClass ]] || mkdir -p $LOGDIR/$JobClass
-                Pipe=/${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
+                Pipe=${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
                 mkfifo -m 700 $Pipe
                 LOGFILE=/${LOGDIR}/$JobClass/${Job}_${DATETIME}.log
                 exec 3>&1
@@ -79,7 +79,8 @@ function whitelist(){
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
     echo -e "$INFO Starting whitelist script. $END"
-    sudo pyhton3 /opt/whitelist/scripts/whitelist.py
+    cd /opt/whitelist/scripts/
+    sudo ./whitelist.py
 }
 
 function gravity_up(){
