@@ -4,6 +4,8 @@
 # Creation: 5 Sept 2022
 # Author: Antag0nisticWomble
 
+## Log output Variables.
+
 export LOGDIR="${PWD%/}"
 export DATE=`date +"%Y%m%d"`
 export DATETIME=`date +"%Y%m%d_%H%M%S"`
@@ -11,7 +13,9 @@ export DATETIME=`date +"%Y%m%d_%H%M%S"`
 ScriptName=`basename $0`
 Job=`basename $0 .sh`
 JobClass=`basename $0 .sh`
- 
+
+## Logging functions
+
 function Log_Open() {
         if [ $NO_JOB_LOGGING ] ; then
                 einfo "Not logging to a logfile because -Z option specified." #(*)
@@ -64,13 +68,6 @@ GOOD='\033[1;92m'   #  -> GREEN
 WARN='\033[1;93m'   #  -> YELLOW
 INFO='\033[1;96m'   #  -> BLUE
 END='\033[0m'       #  -> DEFAULT
-
-## Output Variables
-
-#currentUser=$(whoami)
-#currentHost=$(hostname)
-#dateTime=$(date +"%Y-%m-%d %T")
-#log_location="${PWD%/}/uhole_logs"
 
 ## Common Functions
 
