@@ -8,13 +8,7 @@
 
 source varFunc.sh
 
-## Log output
-
-mkdir logs
-
-log=log_file.txt
-printf "Log File - " > $log
-date >> $log
+Log_Open
 
 ## Check OS
 

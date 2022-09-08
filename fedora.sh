@@ -185,3 +185,5 @@ fi
 
 echo -e "$GOOD Installation complete. Please reboot. $END"
 echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
+
+Log_Close
