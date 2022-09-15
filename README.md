@@ -7,6 +7,14 @@ I don't use social media so a lot of these are included in the lists. Pornograph
 
 This script is a work in progress so you may encounter issues.
 
+## Tested and working instalations ##
+
+CentOS 8 (Stream)
+Fedora 34
+Debian 10/11
+Ubuntu 18.04/20.04/22.04/22.10
+Pi OS Bullseye
+
 ## Important ##
 If using Centos or Fedora this script will disable SELinux as Unbound and Pihole do not function correctly with it enabled.
 
