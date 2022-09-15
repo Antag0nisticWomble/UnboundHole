@@ -10,6 +10,7 @@ This script is a work in progress so you may encounter issues.
 ## Tested and working instalations ##
 
 CentOS 8 (Stream),
+
 Fedora 34,
 
 Debian 10/11,
