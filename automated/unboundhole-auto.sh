@@ -236,6 +236,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
                         echo -e "$INFO starting and enabling unbound service $END"
                         sudo systemctl enable --now unbound
+                        sudo systemctl restart unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Unbound working correctly coninuing $END"

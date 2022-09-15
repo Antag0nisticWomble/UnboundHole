@@ -214,6 +214,7 @@ function timesync_conf(){
     echo -e "$GOOD NTP servers updated. $END"
     echo -e "$INFO starting and enabling unbound service $END"
     sudo systemctl enable --now unbound
+    sudo systemctl restart unbound
     if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
         then
             echo -e "$GOOD Unbound working correctly coninuing $END"
