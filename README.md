@@ -1,7 +1,5 @@
 # UnboundHole #
 
-# Currently broken on Ubuntu #
-
 A simple pihole + unbound install script.
 
 Please be warned the community lists included with this config amount to over 7 million addresses, you may have to manually whitelist some sources. 
