@@ -186,7 +186,8 @@ function ftl_tweaks(){
     sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
     echo -e "$GOOD Pihole FTL config complete. $END"
-    sudo systemctl restart pihole-FTL
+    sudo systemctl stop pihole-FTL
+    sudo systemctl start pihole-FTL
 }
 
 function config_persist(){

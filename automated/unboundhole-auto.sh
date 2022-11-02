@@ -175,7 +175,8 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         echo -e "$INFO Adding tweaks to pihole-FTL. $END"
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl restart pihole-FTL
+                        sudo systemctl stop pihole-FTL
+                        sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
@@ -254,7 +255,8 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         echo -e "$INFO Adding tweaks to pihole-FTL. $END"
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl restart pihole-FTL
+                        sudo systemctl stop pihole-FTL
+                        sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
@@ -334,7 +336,8 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         echo -e "$INFO Adding tweaks to pihole-FTL. $END"
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl restart pihole-FTL
+                        sudo systemctl stop pihole-FTL
+                        sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
@@ -438,7 +441,8 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         echo -e "$INFO Adding tweaks to pihole-FTL. $END"
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl restart pihole-FTL
+                        sudo systemctl stop pihole-FTL
+                        sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
                         gravity_up
