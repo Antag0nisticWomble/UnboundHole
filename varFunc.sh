@@ -78,24 +78,24 @@ function sig_check(){
                 echo -e "$GOOD Bad signature test passed successfully. $END"
             else
                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                $log_location $END"
+                $LOGDIR $END"
         fi
         if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then
                 echo -e "$GOOD Good signature test passed successfully. $END"
             else
-                cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                $log_location $END"
+                $LOGDIR $END"
                 exit
         fi
         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then    
                 echo -e "$GOOD Pihole test complete. Installation complete. $END"
             else
-                cat /var/log/syslog | grep -i pihole > $log_location/pihole.log
+                cat /var/log/syslog | grep -i pihole > $LOGDIR/pihole.log
                 echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                $log_location. $END"
+                $LOGDIR. $END"
                 exit
         fi
 }
@@ -105,7 +105,7 @@ function whitelist(){
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
     echo -e "$INFO Starting whitelist script. $END"
-    sudo pyhton3 /opt/whitelist/scripts/whitelist.py
+    sudo python3 /opt/whitelist/scripts/whitelist.py
     echo -e "$GOOD Script completed successfully. Proceeding to test DNSSEC. $END"
 }
 
@@ -221,7 +221,7 @@ function timesync_conf(){
             echo -e "$GOOD Unbound working correctly coninuing $END"
         else
             echo -e "$ERROR Issue with installation. Please try again $END"
-            cat /var/log/syslog | grep -i unbound > $log_location/unbound.log
+            cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
             exit
     fi
 }

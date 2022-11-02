@@ -77,7 +77,7 @@ function whitelist(){
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
     echo -e "$INFO Starting whitelist script. $END"
     cd /opt/whitelist/scripts/
-    sudo ./whitelist.py
+    sudo python3 whitelist.py
 }
 
 function gravity_up(){
