@@ -103,15 +103,6 @@ function sig_check(){
                 $LOGDIR $END"
                 exit
         fi
-        if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
-            then    
-                echo -e "$GOOD Pihole test complete. Installation complete. $END"
-            else
-                cat /var/log/syslog | grep -i pihole > $LOGDIR/pihole.log
-                echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                $LOGDIR. $END"
-                exit
-        fi
 }
 
 function sysreboot(){
@@ -379,15 +370,6 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                                 $LOGDIR $END"
                                 exit 1
                         fi
-                        if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
-                            then    
-                            echo -e "$GOOD Pihole test complete. Installation complete. $END"
-                            else
-                            cat /var/log/messages | grep -i pihole > $LOGDIR/pihole.log
-                            echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                            $LOGDIR. $END"
-                            exit 1
-                        fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
                         echo -e "$GOOD Installation complete. Please reboot.$END"
                         ;;
@@ -485,15 +467,6 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
                                 $LOGDIR $END"
                                 exit 1
-                        fi
-                        if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
-                            then    
-                            echo -e "$GOOD Pihole test complete. Installation complete. $END"
-                            else
-                            cat /var/log/messages | grep -i pihole > $LOGDIR/pihole.log
-                            echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                            $LOGDIR. $END"
-                            exit 1
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
                         echo -e "$GOOD Installation complete. Please reboot.$END"
