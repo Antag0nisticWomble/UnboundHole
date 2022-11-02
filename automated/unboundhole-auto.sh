@@ -492,5 +492,3 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
 fi
 
 Log_Close
-
-rm $Pipe
