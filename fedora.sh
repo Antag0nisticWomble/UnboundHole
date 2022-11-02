@@ -89,7 +89,9 @@ echo -e "$INFO starting and enabling unbound service $END"
 chown -R unbound:unbound /var/lib/unbound
 sudo systemctl start unbound-anchor
 sudo systemctl enable unbound
-sudo systemctl restart unbound
+sudo systemctl stop unbound
+sleep 2
+sudo systemctl start unbound
 
 if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
     then

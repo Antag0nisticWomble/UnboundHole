@@ -159,6 +159,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         echo -e "$INFO starting and enabling unbound service $END"
                         sudo systemctl enable unbound
                         sudo systemctl stop unbound
+                        sleep 2
                         sudo systemctl start Unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
@@ -249,6 +250,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         echo -e "$INFO starting and enabling unbound service $END"
                         sudo systemctl enable unbound
                         sudo systemctl stop unbound
+                        sleep 2
                         sudo systemctl start unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
@@ -268,6 +270,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl stop pihole-FTL
+                        sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
@@ -326,6 +329,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         echo -e ""
                         sudo systemctl enable unbound
                         sudo systemctl start unbound-anchor
+                        sleep 2
                         sudo systemctl restart unbound
                         echo -e "$INFO Updating Crontab. $END"
                         sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
@@ -349,6 +353,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl stop pihole-FTL
+                        sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
@@ -431,6 +436,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         echo -e ""
                         sudo systemctl enable unbound
                         sudo systemctl start unbound-anchor
+                        sleep 2
                         sudo systemctl restart unbound
                         echo -e "$INFO Updating Crontab. $END"
                         sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
@@ -454,6 +460,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
                         sudo systemctl stop pihole-FTL
+                        sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash

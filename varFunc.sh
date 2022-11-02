@@ -182,6 +182,7 @@ function ftl_tweaks(){
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
     echo -e "$GOOD Pihole FTL config complete. $END"
     sudo systemctl stop pihole-FTL
+    sleep 2
     sudo systemctl start pihole-FTL
 }
 
@@ -198,7 +199,9 @@ function pihole_conf(){
 }
 
 function pihole(){
-    sudo systemctl restart unbound
+    sudo systemctl stop unbound
+    sleep 2
+    sudo systemctl start unbound
     echo -e "$INFO Beginning pihole installation. $END"
     sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
     echo -e "$INFO Pihole successfully installed. $END"
@@ -211,6 +214,7 @@ function timesync_conf(){
     echo -e "$INFO starting and enabling unbound service $END"
     sudo systemctl enable unbound
     sudo systemctl stop unbound
+    sleep 2
     sudo systemctl start unbound
     if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
         then
