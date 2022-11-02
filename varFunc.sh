@@ -92,11 +92,6 @@ function sig_check(){
         if [ "$(dig google.com 127.0.0.1 -p 53 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then    
                 echo -e "$GOOD Pihole test complete. Installation complete. $END"
-            else
-                cat /var/log/syslog | grep -i pihole > $LOGDIR/pihole.log
-                echo -e "$ERROR Issue with installation please report your fault along with the log files generated in 
-                $LOGDIR. $END"
-                exit
         fi
 }
 
@@ -214,8 +209,9 @@ function timesync_conf(){
     sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
     echo -e "$GOOD NTP servers updated. $END"
     echo -e "$INFO starting and enabling unbound service $END"
-    sudo systemctl enable --now unbound
-    sudo systemctl restart unbound
+    sudo systemctl enable unbound
+    sudo systemctl stop unbound
+    sudo systemctl start unbound
     if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
         then
             echo -e "$GOOD Unbound working correctly coninuing $END"

@@ -148,7 +148,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         echo -e " "
                         echo -e "$INFO Installing unbound configuration. $END"
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
+                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
                         echo -e "$INFO Updating Crontab. $END"
                         sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
@@ -238,7 +238,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         echo -e " "
                         echo -e "$INFO Installing unbound configuration. $END"
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
+                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
                         echo -e "$INFO Updating Crontab. $END"
                         sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
@@ -322,7 +322,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         echo -e " "
                         echo -e "$INFO Installing unbound configuration. $END"
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
+                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
                         sudo systemctl enable unbound
                         sudo systemctl start unbound-anchor
@@ -427,7 +427,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         echo -e " "
                         echo -e "$INFO Installing unbound configuration. $END"
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
+                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
                         sudo systemctl enable unbound
                         sudo systemctl start unbound-anchor
