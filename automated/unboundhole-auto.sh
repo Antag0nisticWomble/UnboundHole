@@ -77,7 +77,7 @@ function whitelist(){
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
     echo -e "$INFO Starting whitelist script. $END"
     cd /opt/whitelist/scripts/
-    sudo ./whitelist.py
+    sudo python3 whitelist.py
 }
 
 function gravity_up(){
@@ -157,7 +157,9 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         echo -e "$INFO Updating NTP Server configuration $END"
                         sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
                         echo -e "$INFO starting and enabling unbound service $END"
-                        sudo systemctl enable --now unbound
+                        sudo systemctl enable unbound
+                        sudo systemctl stop unbound
+                        sudo systemctl start Unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
@@ -168,6 +170,15 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
+                        sudo systemctl status pihole-FTL
+                        if [ "$(systemctl status pihole-FTL | grep -oE 'Active')" = 'Active' ]
+                            then
+                                echo -e "$GOOD Pihole FTL working correctly coninuing $END"
+                            else
+                                echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
+                                cat /var/log/syslog | grep -i pihole-FTL > $LOGDIR/pihole-FTL.Log
+                                exit
+                        fi
                         echo -e "$INFO Disabling pihole cache. $END"
                         sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
                         echo -e "$INFO Making pihole config persistent. $END"
@@ -236,8 +247,9 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         echo -e "$INFO Updating NTP Server configuration $END"
                         sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
                         echo -e "$INFO starting and enabling unbound service $END"
-                        sudo systemctl enable --now unbound
-                        sudo systemctl restart unbound
+                        sudo systemctl enable unbound
+                        sudo systemctl stop unbound
+                        sudo systemctl start unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
