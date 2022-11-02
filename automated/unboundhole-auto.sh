@@ -160,7 +160,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo systemctl enable unbound
                         sudo systemctl stop unbound
                         sleep 2
-                        sudo systemctl start Unbound
+                        sudo systemctl start unbound
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
@@ -190,7 +190,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo systemctl stop pihole-FTL
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         sig_check
@@ -273,7 +273,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         sig_check
@@ -356,7 +356,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                         sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         echo -e "$INFO Checking DNSSEC is working $END"
@@ -463,7 +463,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                         sleep 2
                         sudo systemctl start pihole-FTL
                         echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/main/automated/adlists.sh | bash
+                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
                         echo -e "$INFO Checking DNSSEC is working $END"
