@@ -180,6 +180,8 @@ function ftl_tweaks(){
     echo -e "$INFO Adding tweaks to pihole-FTL. $END"
     sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
     sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
+    sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
+    sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
     echo -e "$GOOD Pihole FTL config complete. $END"
     sudo systemctl stop pihole-FTL
     sleep 2
