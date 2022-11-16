@@ -94,7 +94,7 @@ function sig_check(){
                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
                 $LOGDIR $END"
         fi
-        if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
+        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
             then
                 echo -e "$GOOD Good signature test passed successfully. $END"
             else
@@ -366,7 +366,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
                                 $LOGDIR $END"
                         fi
-                        if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
+                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
@@ -466,7 +466,7 @@ if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
                                 $LOGDIR $END"
                         fi
-                        if [ "$(dig sigok.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
+                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
