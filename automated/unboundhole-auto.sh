@@ -308,7 +308,7 @@ if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
                 case $centos_updated_yn in
                     [yY])
                         echo -e "$WARN Disabling SELinux for pihole/unbound operation"
-                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permisive/' /etc/selinux/config
+                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
                         sudo setenforce 0
                         echo -e "$GOOD Continuing to installation Phase. $END"
                         echo -e "$INFO Installing required packages. $END"
