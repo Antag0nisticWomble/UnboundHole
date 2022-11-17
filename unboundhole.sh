@@ -22,13 +22,4 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
         echo -e "$INFO Debian Detected Proceeding $END"
         bash debian.sh
 fi
-if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
-    then 
-        echo -e "$INFO CentOS Detected Proceeding $END"
-        bash centos.sh
-fi
-if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
-    then
-        echo -e "$INFO Fedora Detected Proceeding $END"
-        bash fedora.sh
-fi
+

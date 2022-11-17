@@ -1,7 +1,7 @@
 #!/bin/bash
 # Filename: unboundhole-auto.sh
-# Version: 1.4
-# Creation: 5 Sept 2022
+# Version: 2.0
+# Creation: 17 Nov 2022
 # Author: Antag0nisticWomble
 
 ## Log output Variables.
@@ -14,7 +14,13 @@ ScriptName=`basename $0`
 Job=`basename $0 .sh`
 JobClass=`basename $0 .sh`
 
-## Logging functions
+ERROR='\033[1;91m'  #  -> RED
+GOOD='\033[1;92m'   #  -> GREEN
+WARN='\033[1;93m'   #  -> YELLOW
+INFO='\033[1;96m'   #  -> BLUE
+END='\033[0m'       #  -> DEFAULT
+
+## Logging function
 
 function Log_Open() {
         if [ $NO_JOB_LOGGING ] ; then
@@ -45,7 +51,7 @@ function Log_Close() {
                         sleep 1
                         kill  $teepid
                 fi
-                rm $Pipe
+                sudo rm $Pipe
                 unset PIPE_OPENED
         fi
 }
@@ -58,18 +64,8 @@ while getopts ":Z" opt ; do
                         ;;
         esac
 done
- 
-Log_Open
 
-## Output Formatting
-
-ERROR='\033[1;91m'  #  -> RED
-GOOD='\033[1;92m'   #  -> GREEN
-WARN='\033[1;93m'   #  -> YELLOW
-INFO='\033[1;96m'   #  -> BLUE
-END='\033[0m'       #  -> DEFAULT
-
-## Common Functions
+## Shared functions
 
 function whitelist(){
     echo -e "$INFO Installing whitelist script. $END"
@@ -85,33 +81,14 @@ function gravity_up(){
     sudo pihole -g
 }
 
-function sig_check(){
-    echo -e "$INFO Checking DNSSEC is working $END"
-        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
-            then
-                echo -e "$GOOD Bad signature test passed successfully. $END"
-            else
-                echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                $LOGDIR $END"
-        fi
-        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
-            then
-                echo -e "$GOOD Good signature test passed successfully. $END"
-            else
-                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
-                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                $LOGDIR $END"
-                exit
-        fi
-}
-
 function sysreboot(){
     echo -e "$INFO Would you like to reboot the system now? Y/N $END"
         read sys_reboot_yn
             case $sys_reboot_yn in
                 [yY])
                     echo -e "$WARN system rebooting in 10 seconds! $END"
-                    sudo shutdown -r 10
+                    sleep 10
+                    sudo reboot
                     ;;
                 [nN])
                     echo -e "$INFO Please restart the script once system has rebooted. $END"
@@ -120,9 +97,11 @@ function sysreboot(){
             esac
 }
 
-## -------------------------  Script start  ------------------------- ##
+## Script start
 
-# Ubuntu
+Log_Open
+
+## Ubuntu
 
 if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
     then
@@ -152,12 +131,14 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo systemctl stop unbound
                         sleep 2
                         sudo systemctl start unbound
+                        sleep 2
                         if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
                                 cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
                                 exit
                         fi
                         echo -e "$INFO Beginning pihole installation. $END"
@@ -169,6 +150,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                             else
                                 echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
                                 cat /var/log/syslog | grep -i pihole-FTL > $LOGDIR/pihole-FTL.Log
+                                journalctl -xe pihole_FTL.service > $LOGDIR/FTLj.log
                                 exit
                         fi
                         echo -e "$INFO Disabling pihole cache. $END"
@@ -186,7 +168,24 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
-                        sig_check
+                        echo -e "$INFO Checking DNSSEC is working $END"
+                        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
+                            then
+                                echo -e "$GOOD Bad signature test passed successfully. $END"
+                            else
+                                echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in $LOGDIR $END"
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
+                        fi
+                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
+                            then
+                                echo -e "$GOOD Good signature test passed successfully. $END"
+                            else
+                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $LOGDIR $END"
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
+                                exit
+                        fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
                         echo -e "$GOOD Installation complete. Please reboot.$END"
                         ;;
@@ -214,6 +213,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                 esac
 
 fi
+
 
 # Debian
 
@@ -271,7 +271,24 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
                         gravity_up
                         whitelist
-                        sig_check
+                        echo -e "$INFO Checking DNSSEC is working $END"
+                        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
+                            then
+                                echo -e "$GOOD Bad signature test passed successfully. $END"
+                            else
+                                echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in $LOGDIR $END"
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
+                        fi
+                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
+                            then
+                                echo -e "$GOOD Good signature test passed successfully. $END"
+                            else
+                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $LOGDIR $END"
+                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
+                                exit
+                        fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
                         echo -e "$GOOD Installation complete. Please reboot.$END"
                         ;;
@@ -298,205 +315,5 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
 
 fi
 
-# Centos
-
-if [ "$(hostnamectl | grep -oE 'CentOS')" = 'CentOS' ]
-    then 
-        echo -e "$INFO CentOS Detected Proceeding $END"
-            echo -e "$INFO Is the system fully updated? [Y / N] $END"
-            read centos_updated_yn
-                case $centos_updated_yn in
-                    [yY])
-                        echo -e "$WARN Disabling SELinux for pihole/unbound operation"
-                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
-                        sudo setenforce 0
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        echo -e "$INFO Installing required packages. $END"
-                        sudo yum install epel-release -y
-                        sudo yum install curl git python3 unbound sqlite -y
-                        echo -e "$INFO Downloading and installing root hints file. $END"
-                        wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-                        sudo chown -R unbound:unbound /var/lib/unbound/
-                        echo -e " "
-                        echo -e "$INFO Installing unbound configuration. $END"
-                        sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
-                        echo -e ""
-                        sudo systemctl enable unbound
-                        sudo systemctl start unbound-anchor
-                        sleep 2
-                        sudo systemctl restart unbound
-                        echo -e "$INFO Updating Crontab. $END"
-                        sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
-                        sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
-                        sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
-                        if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
-                            then
-                                echo -e "$GOOD Unbound working correctly coninuing $END"
-                            else
-                                echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                exit 1
-                        fi
-                        echo -e "$INFO Beginning pihole installation. $END"
-                        sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true PIHOLE_SKIP_OS_CHECK=true bash -l
-                        echo -e "$INFO Disabling pihole cache. $END"
-                        sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-                        echo -e "$INFO Making pihole config persistent. $END"
-                        sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-                        echo -e "$INFO Adding tweaks to pihole-FTL. $END"
-                        sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl stop pihole-FTL
-                        sleep 2
-                        sudo systemctl start pihole-FTL
-                        echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
-                        gravity_up
-                        whitelist
-                        echo -e "$INFO Checking DNSSEC is working $END"
-                        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
-                            then
-                                echo -e "$GOOD Bad signature test passed successfully. $END"
-                            else
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
-                                echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                                $LOGDIR $END"
-                        fi
-                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
-                            then
-                                echo -e "$GOOD Good signature test passed successfully. $END"
-                            else
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
-                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                                $LOGDIR $END"
-                                exit 1
-                        fi
-                        echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
-                        echo -e "$GOOD Installation complete. Please reboot.$END"
-                        ;;
-                    [nN])
-                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-                            read centos_upgrade_yn
-                                case $centos_upgrade_yn in
-                                    [yY])
-                                        echo -e "$WARN Proceeding to upgrade.$END"
-                                        echo -e "$INFO Fetching and installing latest updates. $END"
-                                        sudo dnf update -y
-                                        echo -e "$GOOD System upgrades complete! $END"
-                                        sysreboot
-                                        ;;
-                                    [nN])
-                                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                                        exit 0
-                                        ;;
-                                esac
-                        ;;
-                esac
-fi
-
-# Fedora
-
-if [ "$(hostnamectl | grep -oE 'Fedora')" = 'Fedora' ]
-    then
-        echo -e "$INFO Fedora Detected Proceeding $END"
-            echo -e "$INFO Is the system fully updated? [Y / N] $END"
-            read fedora_updated_yn
-                case $fedora_updated_yn in
-                    [yY])
-                        echo -e "$WARN Disabling SELinux for pihole/unbound operation"
-                        sudo sed -i 's/SELINUX=enforcing/SELINUX=permisive/' /etc/selinux/config
-                        sudo setenforce 0
-                        echo -e "$GOOD Continuing to installation Phase. $END"
-                        echo -e "$INFO Installing required packages. $END"
-                        sudo dnf install curl git python3 unbound sqlite -y
-                        echo -e "$INFO Downloading and installing root hints file. $END"
-                        wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-                        sudo chown -R unbound:unbound /var/lib/unbound/
-                        echo -e " "
-                        echo -e "$INFO Installing unbound configuration. $END"
-                        sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
-                        wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
-                        echo -e ""
-                        sudo systemctl enable unbound
-                        sudo systemctl start unbound-anchor
-                        sleep 2
-                        sudo systemctl restart unbound
-                        echo -e "$INFO Updating Crontab. $END"
-                        sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
-                        sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
-                        sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
-                        if [ "$(systemctl status unbound | grep -oE 'Active')" = 'Active' ]
-                            then
-                                echo -e "$GOOD Unbound working correctly coninuing $END"
-                            else
-                                echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                exit 1
-                        fi
-                        echo -e "$INFO Beginning pihole installation. $END"
-                        sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SELINUX=true PIHOLE_SKIP_OS_CHECK=true bash -l
-                        echo -e "$INFO Disabling pihole cache. $END"
-                        sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-                        echo -e "$INFO Making pihole config persistent. $END"
-                        sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-                        echo -e "$INFO Adding tweaks to pihole-FTL. $END"
-                        sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl stop pihole-FTL
-                        sleep 2
-                        sudo systemctl start pihole-FTL
-                        echo -e "$INFO Installing adlists $END"
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/adlists.sh | bash
-                        gravity_up
-                        whitelist
-                        echo -e "$INFO Checking DNSSEC is working $END"
-                        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
-                            then
-                                echo -e "$GOOD Bad signature test passed successfully. $END"
-                            else
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > badsig.log
-                                echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in 
-                                $LOGDIR $END"
-                        fi
-                        if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
-                            then
-                                echo -e "$GOOD Good signature test passed successfully. $END"
-                            else
-                                cat /var/log/messages | grep -i unbound > $LOGDIR/unbound.log
-                                dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 > goodsig.log
-                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in 
-                                $LOGDIR $END"
-                                exit 1
-                        fi
-                        echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
-                        echo -e "$GOOD Installation complete. Please reboot.$END"
-                        ;;
-                    [nN])
-                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
-                            read fedora_upgrade_yn
-                                case $fedora_upgrade_yn in
-                                    [yY])
-                                        echo -e "$WARN Proceeding to upgrade.$END"
-                                        echo -e "$INFO Fetching and installing latest updates. $END"
-                                        sudo dnf update -y
-                                        echo -e "$GOOD System upgrades complete! $END"
-                                        sysreboot
-                                        ;;
-                                    [nN])
-                                        echo -e "$ERROR Please update and reboot system then try again. $END"
-                                        exit 0
-                                        ;;
-                                esac
-                        ;;
-                esac
-fi
-
 Log_Close
+
