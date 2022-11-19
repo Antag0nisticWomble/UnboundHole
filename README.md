@@ -20,7 +20,7 @@ Pi OS Bullseye
 Be sure that you leave DNSSEC and cache disabled on pihole as this will be handled by unbound and turning them on can cause issues.
 The script will automatically disable these features in pihole.
 
-## One liner to get you started if you want to clone the repo ##
+## One liner to get you started. ##
 wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/unboundhole-auto.sh && chmod +x unboundhole-auto.sh && ./unboundhole-auto.sh && rm unboundhole-auto.sh
 
 On the pihole installation menu set DNS servers to custom and input 127.0.0.1#5335 this is to make sure pihole queries unbound for addresses.
