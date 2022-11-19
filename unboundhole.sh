@@ -152,7 +152,8 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
                         gravity_up
                         whitelist
-                        if [ "$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
+                        sleep 5
+                        if [ "$(dig dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
                             then
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
@@ -236,6 +237,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
                         gravity_up
                         whitelist
+                        sleep 5
                         if [ "$(dig dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
                             then
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
