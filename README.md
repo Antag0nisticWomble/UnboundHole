@@ -21,9 +21,6 @@ Be sure that you leave DNSSEC and cache disabled on pihole as this will be handl
 The script will automatically disable these features in pihole.
 
 ## One liner to get you started if you want to clone the repo ##
-git clone https://github.com/Antag0nisticWomble/UnboundHole.git && cd UnboundHole/ && chmod +x unboundhole.sh && ./unboundhole.sh
-
-## One liner for those who would rather not clone the repo and just run the script ##
 wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/automated/unboundhole-auto.sh && chmod +x unboundhole-auto.sh && ./unboundhole-auto.sh && rm unboundhole-auto.sh
 
 On the pihole installation menu set DNS servers to custom and input 127.0.0.1#5335 this is to make sure pihole queries unbound for addresses.
