@@ -132,7 +132,6 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
                                 cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
-                                journalctl -xe unbound.service > $LOGDIR/unboundj.log
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
@@ -143,7 +142,6 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                             else
                                 echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
                                 cat /var/log/syslog | grep -i pihole-FTL > $LOGDIR/pihole-FTL.Log
-                                journalctl -xe pihole_FTL.service > $LOGDIR/FTLj.log
                                 exit
                         fi
                         sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
