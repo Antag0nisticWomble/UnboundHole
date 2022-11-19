@@ -68,16 +68,13 @@ done
 ## Shared functions
 
 function whitelist(){
-    echo -e "$INFO Installing whitelist script. $END"
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-    echo -e "$INFO Starting whitelist script. $END"
     cd /opt/whitelist/scripts/
     sudo python3 whitelist.py
 }
 
 function gravity_up(){
-    echo -e "$INFO Pulling in new lists into gravity. $END"
     sudo pihole -g
 }
 
