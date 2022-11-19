@@ -236,7 +236,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
                         gravity_up
                         whitelist
-                        if [ "$(dig www.dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
+                        if [ "$(dig dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
                             then
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
