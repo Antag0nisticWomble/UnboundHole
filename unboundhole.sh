@@ -7,12 +7,11 @@
 ## Log output Variables.
 
 export LOGDIR="${PWD%/}"
-export DATE=`date +"%Y%m%d"`
-export DATETIME=`date +"%Y%m%d_%H%M%S"`
+export DATE=$(date +"%Y%m%d")
+export DATETIME=$(date +"%Y%m%d_%H%M%S")
  
-ScriptName=`basename $0`
-Job=`basename $0 .sh`
-JobClass=`basename $0 .sh`
+Job=$(basename $0 .sh)
+JobClass=$(basename $0 .sh)
 
 ERROR='\033[1;91m'  #  -> RED
 GOOD='\033[1;92m'   #  -> GREEN
@@ -23,35 +22,35 @@ END='\033[0m'       #  -> DEFAULT
 ## Logging function
 
 function Log_Open() {
-        if [ $NO_JOB_LOGGING ] ; then
+        if [ "$NO_JOB_LOGGING" ] ; then
                 einfo "Not logging to a logfile because -Z option specified." #(*)
         else
-                [[ -d $LOGDIR/$JobClass ]] || mkdir -p $LOGDIR/$JobClass
+                [[ -d $LOGDIR/$JobClass ]] || mkdir -p "$LOGDIR"/"$JobClass"
                 Pipe=${LOGDIR}/$JobClass/${Job}_${DATETIME}.pipe
-                mkfifo -m 700 $Pipe
+                mkfifo -m 700 "$Pipe"
                 LOGFILE=/${LOGDIR}/$JobClass/${Job}_${DATETIME}.log
                 exec 3>&1
-                tee ${LOGFILE} <$Pipe >&3 &
+                tee "${LOGFILE}" <"$Pipe" >&3 &
                 teepid=$!
-                exec 1>$Pipe
+                exec 1>"$Pipe"
                 PIPE_OPENED=1
                 enotify="Logging to $LOGFILE  # (*)"
-                [ $SUDO_USER ] && enotify "Sudo user: $SUDO_USER" #(*)
+                [ "$SUDO_USER" ] && enotify "Sudo user: $SUDO_USER" #(*)
         fi
 }
  
 function Log_Close() {
-        if [ ${PIPE_OPENED} ] ; then
+        if [ "${PIPE_OPENED}" ] ; then
                 exec 1<&3
                 sleep 0.2
-                ps --pid $teepid >/dev/null
+                ps --pid "$teepid" >/dev/null
                 if [ $? -eq 0 ] ; then
                         # a wait $teepid whould be better but some
                         # commands leave file descriptors open
                         sleep 1
-                        kill  $teepid
+                        kill  "$teepid"
                 fi
-                sudo rm $Pipe
+                sudo rm "$Pipe"
                 unset PIPE_OPENED
         fi
 }
@@ -60,8 +59,8 @@ OPTIND=1
 while getopts ":Z" opt ; do
         case $opt in
                 Z)
-                        NO_JOB_LOGGING="true"
-                        ;;
+                NO_JOB_LOGGING="true"
+                ;;
         esac
 done
 
@@ -70,7 +69,7 @@ done
 function whitelist(){
     sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
     sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-    cd /opt/whitelist/scripts/
+    cd /opt/whitelist/scripts/ || exit
     sudo python3 whitelist.py
 }
 
@@ -128,7 +127,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                cat /var/log/syslog | grep -i unbound > "$LOGDIR"/unbound.log
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
@@ -138,7 +137,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Pihole FTL working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
-                                cat /var/log/syslog | grep -i pihole-FTL > $LOGDIR/pihole-FTL.Log
+                                cat /var/log/syslog | grep -i pihole-FTL > "$LOGDIR"/pihole-FTL.Log
                                 exit
                         fi
                         sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
@@ -221,7 +220,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                cat /var/log/syslog | grep -i unbound > "$LOGDIR"/unbound.log
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
@@ -243,14 +242,14 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in $LOGDIR $END"
-                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                cat /var/log/syslog | grep -i unbound > "$LOGDIR"/unbound.log
                         fi
                         if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $LOGDIR $END"
-                                cat /var/log/syslog | grep -i unbound > $LOGDIR/unbound.log
+                                cat /var/log/syslog | grep -i unbound > "$LOGDIR"/unbound.log
                                 exit
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
