@@ -71,7 +71,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > "$BASEDIR"/unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > "$BASEDIR"/unbound.log
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
@@ -81,7 +81,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Pihole FTL working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
-                                cat /var/log/syslog | grep -i pihole-FTL > "$BASEDIR"/pihole-FTL.Log
+                                sudo cat /var/log/syslog | grep -i pihole-FTL > "$BASEDIR"/pihole-FTL.Log
                                 exit
                         fi
                         sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
@@ -91,7 +91,9 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
                         sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
                         sudo systemctl stop pihole-FTL
+                        sleep 2
                         sudo systemctl start pihole-FTL
+                        sleep 2
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
                         gravity_up
                         whitelist
@@ -101,14 +103,14 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in $BASEDIR $END"
-                                cat /var/log/syslog | grep -i unbound > $BASEDIR/unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > $BASEDIR/unbound.log
                         fi
                         if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $BASEDIR $END"
-                                cat /var/log/syslog | grep -i unbound > $BASEDIR/unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > $BASEDIR/unbound.log
                                 exit
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
@@ -163,7 +165,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 echo -e "$GOOD Unbound working correctly coninuing $END"
                             else
                                 echo -e "$ERROR Issue with installation. Please try again $END"
-                                cat /var/log/syslog | grep -i unbound > "$BASEDIR"/unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > "$BASEDIR"/unbound.log
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
@@ -176,6 +178,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo systemctl stop pihole-FTL
                         sleep 2
                         sudo systemctl start pihole-FTL
+                        sleep 2
                         sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
                         gravity_up
                         whitelist
@@ -185,14 +188,14 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 echo -e "$GOOD Bad signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Bad signature test failed. Issue with Unbound installation please report your fault along with the log files generated in $BASEDIR $END"
-                                cat /var/log/syslog | grep -i unbound > unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > unbound.log
                         fi
                         if [ "$(dig amazon.com @127.0.0.1 -p 5335 | grep -oE 'NOERROR')" = 'NOERROR' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
                                 echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $BASEDIR $END"
-                                cat /var/log/syslog | grep -i unbound > unbound.log
+                                sudo cat /var/log/syslog | grep -i unbound > unbound.log
                                 exit
                         fi
                         echo -e "$WARN Remember to run sudo pihole -a -p to change your password. $END"
