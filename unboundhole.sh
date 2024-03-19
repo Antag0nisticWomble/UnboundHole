@@ -117,7 +117,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         echo -e "$GOOD Installation complete. Please reboot.$END"
                         ;;
                     [nN])
-                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"    
+                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
                         read ubuntu_upgrade_yn
                             case $ubuntu_upgrade_yn in
                                 [yY])
@@ -202,7 +202,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         echo -e "$GOOD Installation complete. Please reboot.$END"
                         ;;
                     [nN])
-                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"    
+                        echo -e "$WARN Would you like to upgrade the system now? Y/N $END"
                         read debian_upgrade_yn
                             case $debian_upgrade_yn in
                                 [yY])
