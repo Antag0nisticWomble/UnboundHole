@@ -109,7 +109,7 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
-                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $BASEDIR $END"
+                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation please report your fault along with the log files generated in $BASEDIR $END"
                                 sudo cat /var/log/syslog | grep -i unbound > $BASEDIR/unbound.log
                                 exit
                         fi
@@ -194,7 +194,7 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                             then
                                 echo -e "$GOOD Good signature test passed successfully. $END"
                             else
-                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation pplease report your fault along with the log files generated in $BASEDIR $END"
+                                echo -e "$ERROR Good signature test faied. Issue with Unbound installation please report your fault along with the log files generated in $BASEDIR $END"
                                 sudo cat /var/log/syslog | grep -i unbound > unbound.log
                                 exit
                         fi
