@@ -14,16 +14,9 @@ END='\033[0m'       #  -> DEFAULT
 
 ## Shared functions
 
-function whitelist(){
-    sudo git clone https://github.com/anudeepND/whitelist.git /opt/whitelist/
-    sudo sed -i '87s/.*/ /' /opt/whitelist/scripts/whitelist.py
-    cd /opt/whitelist/scripts/ || exit
-    sudo python3 whitelist.py
-}
-
-function gravity_up(){
-    sudo pihole -g
-}
+#function gravity_up(){
+#    sudo pihole -g
+#}
 
 function sysreboot(){
     echo -e "$INFO Would you like to reboot the system now? Y/N $END"
@@ -57,7 +50,6 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
                         wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
-                        sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
                         sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
                         sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
                         sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
@@ -75,7 +67,15 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
-                        sudo systemctl status pihole-FTL
+                        sudo sed -i '$ a size = 0' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a analyzeOnlyAandAAAA = true' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a maxDBdays = 90' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a iCloudPrivateRelay = true' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a mozillaCanary = true' /etc/pihole/pihole.toml
+                        sudo systemctl stop pihole-FTL
+                        sleep 2
+                        sudo systemctl start pihole-FTL
+                        sleep 2
                         if [ "$(systemctl status pihole-FTL | grep -oE 'Active')" = 'Active' ]
                             then
                                 echo -e "$GOOD Pihole FTL working correctly coninuing $END"
@@ -84,19 +84,8 @@ if  [ "$(hostnamectl | grep -oE 'Ubuntu')" = 'Ubuntu' ]
                                 sudo cat /var/log/syslog | grep -i pihole-FTL > "$BASEDIR"/pihole-FTL.Log
                                 exit
                         fi
-                        sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-                        sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-                        sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
-                        sudo systemctl stop pihole-FTL
-                        sleep 2
-                        sudo systemctl start pihole-FTL
-                        sleep 2
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
-                        gravity_up
-                        whitelist
+                        # sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
+                        # gravity_up
                         sleep 5
                         if [ "$(dig dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
                             then
@@ -152,7 +141,6 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                         sudo sed -i '$ a net.core.rmem_max=1048576' /etc/sysctl.conf
                         wget https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/pi-hole.conf -qO- | sudo tee /etc/unbound/unbound.conf
                         echo -e ""
-                        sudo sed -i '$ a 0 1 * * */7     root    /opt/whitelist/scripts/whitelist.py' /etc/crontab
                         sudo sed -i '$ a 05 01 15 */3 *  root    wget -O /var/lib/unbound/root.hints https://www.internic.net/domain/named.root' /etc/crontab
                         sudo sed -i '$ a 10 01 15 */3 *  root    service unbound restart' /etc/crontab
                         sudo sed -i '$ a FallbackNTP=194.58.204.20 pool.ntp.org/' /etc/systemd/timesyncd.conf
@@ -169,19 +157,25 @@ if [ "$(hostnamectl | grep -oE 'Debian')" = 'Debian' ]
                                 exit
                         fi
                         sudo curl -sSL https://install.pi-hole.net | sudo PIHOLE_SKIP_OS_CHECK=true bash
-                        sudo sed -i 's/cache-size=10000/cache-size=0 /' /etc/dnsmasq.d/01-pihole.conf
-                        sudo sed -i 's/CACHE_SIZE=10000/CACHE_SIZE=0 /' /etc/pihole/setupVars.conf
-                        sudo sed -i '$ a ANALYZE_ONLY_A_AND_AAAA=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MAXDBDAYS=90' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a BLOCK_ICLOUD_PR=true' /etc/pihole/pihole-FTL.conf
-                        sudo sed -i '$ a MOZILLA_CANARY=true' /etc/pihole/pihole-FTL.conf
+                        sudo sed -i '$ a size = 0' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a analyzeOnlyAandAAAA = true' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a maxDBdays = 90' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a iCloudPrivateRelay = true' /etc/pihole/pihole.toml
+                        sudo sed -i '$ a mozillaCanary = true' /etc/pihole/pihole.toml
                         sudo systemctl stop pihole-FTL
                         sleep 2
                         sudo systemctl start pihole-FTL
                         sleep 2
-                        sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
-                        gravity_up
-                        whitelist
+                        if [ "$(systemctl status pihole-FTL | grep -oE 'Active')" = 'Active' ]
+                            then
+                                echo -e "$GOOD Pihole FTL working correctly coninuing $END"
+                            else
+                                echo -e "$ERROR Issue with pihole-FTL installation. Please try again $END"
+                                sudo cat /var/log/syslog | grep -i pihole-FTL > "$BASEDIR"/pihole-FTL.Log
+                                exit
+                        fi
+                        # sudo curl -sSL https://raw.githubusercontent.com/Antag0nisticWomble/UnboundHole/stable/adlists.sh | bash
+                        # gravity_up
                         sleep 5
                         if [ "$(dig dnssec-failed.org @127.0.0.1 -p 5335 | grep -oE 'SERVFAIL')" = 'SERVFAIL' ]
                             then
